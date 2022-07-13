@@ -1,0 +1,12 @@
+title Single Page Form
+
+note over browser:
+on form onsubmit
+note is formated as a JSON object, including 'note' and 'date'
+browser pushes the new note JSON into the notes array
+browser redraws notes 
+browser posts note to server (note JSON string as payload)
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: Code 201

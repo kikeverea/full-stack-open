@@ -1,0 +1,28 @@
+title Single Page Visit
+
+browser->server: HTTP GET ttps://studies.cs.helsinki.fi/exampleapp/spa
+server-->browser: spa.html
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+server-->browser: spa.js
+
+note over browser:
+browser executes spa.js
+a new event handler for form.onsubmit is registered when the window.onload
+event is risen
+spa.js requests JSON data from server
+```
+    xhttp.open("GET", "/exampleapp/data.json", true)
+    xhttp.send()
+```
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+server-->browser: data.json
+
+note over browser:
+browser executes the event handler
+that renders notes to display
+notes are saved as an array
+end note
