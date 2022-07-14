@@ -11,38 +11,75 @@ const App = () => {
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.'
   ]
-   
+  
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
 
-  const anecdoteIndex = Math.floor(Math.random() * anecdotes.length);
-  const nextAnecdote = () => setSelected(selected + 1)
-  const voteForAnecdote = () => {
-    const newVotes = [...votes]
-    console.log("VOTES: ", votes)
+  const nextAnecdote = () => {
+    let newSelected = selected;
+    while(newSelected === selected) {
+      newSelected = randomInt(anecdotes.length);
+    }
 
-    newVotes[anecdoteIndex] += 1
-    console.log("NEW VOTES: ", newVotes)
-    setVotes(newVotes)
-  } 
+    setSelected(newSelected);
+  }
+  const voteForAnecdote = () => {
+    const newVotes = [...votes];
+    newVotes[selected] += 1;
+    setVotes(newVotes);
+  }
   
   return (
     <>
-      <Anecdote anecdote={anecdotes[anecdoteIndex]} />
-      <VoteCount count={votes[anecdoteIndex]} />
+      <h1>Anecdote of the day</h1>
+      <Anecdote anecdote={anecdotes[selected]} votes={votes[selected]} />
       <Button onClick={voteForAnecdote} text="vote" />
       <Button onClick={nextAnecdote} text="next anecdote" />
+      <h1>Anecdote with most votes</h1>
+      <WinnerAnecdote anecdotes={anecdotes} votes={votes} />
     </>
   )
 }
 
-const Anecdote = ({anecdote}) => 
-    <h3>
+const WinnerAnecdote = ({anecdotes, votes}) => {
+  let winnerInd = determineWinnerIndex(votes);
+
+  if(winnerInd >= 0) {
+      return (<Anecdote anecdote={anecdotes[winnerInd]} votes={votes[winnerInd]} />)
+  }
+  else {
+    return (<p>No votes yet</p>)
+  }
+}
+ 
+const randomInt = (max) => Math.floor(Math.random() * max)
+
+const determineWinnerIndex = (votes) => {
+  let winner = 0;
+  let hasVotes = false;
+
+  for(let i = 1; i < votes.length; i++) {
+    let winnerVotes = votes[winner];
+    let compareVotes = votes[i];
+
+    if (compareVotes > winnerVotes) {
+      winner = i;
+    }
+
+    hasVotes = hasVotes || (winnerVotes + compareVotes) > 0;
+  }
+
+  return (hasVotes ? winner : -1)
+}
+
+const Anecdote = ({anecdote, votes}) => 
+    <div>
       {anecdote}
-    </h3>
+      <VoteCount count={votes} />
+    </div>
 
 const VoteCount = ({count}) =>
-  <h3>Has {count > 0 ? count : 'no'} votes</h3>
+  <h4>Has {count > 0 ? count : 'no'} votes</h4>
 
 const Button = ({onClick, text}) => <button onClick={onClick}>{text}</button>
 
