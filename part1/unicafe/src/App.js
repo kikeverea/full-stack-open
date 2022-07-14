@@ -26,13 +26,21 @@ const FeedbackInput = ({good, neutral, bad}) =>
     <Button onclick={bad} text="bad" />
   </>
 
-const Statistics = ({good, neutral, bad}) =>
-  <>
-    <h1>Statistics</h1>
-    <p>Good: {good}</p>
-    <p>Neutral: {neutral}</p>
-    <p>Bad: {bad}</p>
-  </>
+const Statistics = ({good, neutral, bad}) => {
+  const total = good + neutral + bad;
+  const positivePercent = Math.round((good * 100) / total);
+  return (
+    <>
+      <h1>Statistics</h1>
+      <p>Good: {good}</p>
+      <p>Neutral: {neutral}</p>
+      <p>Bad: {bad}</p>
+      <p>All: {total}</p>
+      <p>Average: {total / 3}</p>
+      <p>Positive: {positivePercent ? (positivePercent + '%') : "0%"}</p>
+    </>
+  )
+}
 
 const Button = ({onclick, text}) => <button onClick={onclick}>{text}</button> 
 
