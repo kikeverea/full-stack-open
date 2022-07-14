@@ -12,7 +12,9 @@ const App = () => {
 
   return (
     <div>
+      <h1>Give Feedback</h1>
       <FeedbackInput good={addGood} neutral={addNeutral} bad={addBad}/>
+      <h1>Statistics</h1>
       <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   )
@@ -20,7 +22,6 @@ const App = () => {
 
 const FeedbackInput = ({good, neutral, bad}) => 
   <>
-    <h1>Give Feedback</h1>
     <Button onclick={good} text="good" />
     <Button onclick={neutral} text="neutral" />
     <Button onclick={bad} text="bad" />
@@ -28,30 +29,31 @@ const FeedbackInput = ({good, neutral, bad}) =>
 
 const Statistics = ({good, neutral, bad}) => {
   const total = good + neutral + bad;
-  const positivePercent = Math.round((good * 100) / total);
   
   if(total > 0) {
+    const positivePercent = Math.round((good * 100) / total);
+    const average = (total / 3).toFixed(1);
     return(
       <>
-        <h1>Statistics</h1>
-        <p>Good: {good}</p>
-        <p>Neutral: {neutral}</p>
-        <p>Bad: {bad}</p>
-        <p>All: {total}</p>
-        <p>Average: {total / 3}</p>
-        <p>Positive: {positivePercent ? (positivePercent + '%') : "0%"}</p>
+        <StatisticLine statistic="Good" value={good} />
+        <StatisticLine statistic="Neutral" value={neutral} />
+        <StatisticLine statistic="Bad" value={bad} />
+        <StatisticLine statistic="All" value={total} />
+        <StatisticLine statistic="Average" value={average} />
+        <StatisticLine statistic="Positive" value={positivePercent ? (positivePercent + '%') : "0%"} />
       </>
     )
   }
   else {
     return(
       <>
-      <h1>Statistics</h1>
       <p>No feedback given</p>
       </>
     )
   }
 }
+
+const StatisticLine = ({statistic, value}) => <p>{statistic}: {value}</p>
 
 const Button = ({onclick, text}) => <button onClick={onclick}>{text}</button> 
 
