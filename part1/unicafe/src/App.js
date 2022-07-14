@@ -34,14 +34,14 @@ const Statistics = ({good, neutral, bad}) => {
     const positivePercent = Math.round((good * 100) / total);
     const average = (total / 3).toFixed(1);
     return(
-      <>
+      <table>
         <StatisticLine statistic="Good" value={good} />
         <StatisticLine statistic="Neutral" value={neutral} />
         <StatisticLine statistic="Bad" value={bad} />
         <StatisticLine statistic="All" value={total} />
         <StatisticLine statistic="Average" value={average} />
         <StatisticLine statistic="Positive" value={positivePercent ? (positivePercent + '%') : "0%"} />
-      </>
+      </table>
     )
   }
   else {
@@ -53,7 +53,11 @@ const Statistics = ({good, neutral, bad}) => {
   }
 }
 
-const StatisticLine = ({statistic, value}) => <p>{statistic}: {value}</p>
+const StatisticLine = ({statistic, value}) => 
+  <tr>
+    <td>{statistic}:</td> <td>{value}</td>
+  </tr>
+  
 
 const Button = ({onclick, text}) => <button onClick={onclick}>{text}</button> 
 
