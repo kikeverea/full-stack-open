@@ -13,23 +13,36 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
-  const nextAnecdote = () => setSelected(selected + 1)
+  const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
 
+  const anecdoteIndex = Math.floor(Math.random() * anecdotes.length);
+  const nextAnecdote = () => setSelected(selected + 1)
+  const voteForAnecdote = () => {
+    const newVotes = [...votes]
+    console.log("VOTES: ", votes)
+
+    newVotes[anecdoteIndex] += 1
+    console.log("NEW VOTES: ", newVotes)
+    setVotes(newVotes)
+  } 
+  
   return (
     <>
-      <RandomAnecdote anecdotes={anecdotes} />
+      <Anecdote anecdote={anecdotes[anecdoteIndex]} />
+      <VoteCount count={votes[anecdoteIndex]} />
+      <Button onClick={voteForAnecdote} text="vote" />
       <Button onClick={nextAnecdote} text="next anecdote" />
     </>
   )
 }
 
-const RandomAnecdote = ({anecdotes}) => {
-  const random = Math.floor(Math.random() * anecdotes.length)
-  return (
+const Anecdote = ({anecdote}) => 
     <h3>
-      {anecdotes[random]}
-    </h3>)
-}
+      {anecdote}
+    </h3>
+
+const VoteCount = ({count}) =>
+  <h3>Has {count > 0 ? count : 'no'} votes</h3>
 
 const Button = ({onClick, text}) => <button onClick={onClick}>{text}</button>
 
