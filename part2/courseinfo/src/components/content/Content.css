@@ -1,0 +1,9 @@
+td:nth-child(2) {
+    text-align: right;
+    padding-left: 16px;
+}
+
+tfoot > tr > td {
+    font-weight: bold;
+    padding-top: 16px;
+}
