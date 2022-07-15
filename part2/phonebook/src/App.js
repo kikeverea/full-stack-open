@@ -14,11 +14,13 @@ const App = () => {
   const addNewName = (event) => {
     event.preventDefault();
 
-    if (!newName.trim())
+    const nameInput = newName.trim();
+
+    if (!nameInput)
       return;
 
     const personToAdd = {
-      name: newName
+      name: nameInput
     }
     setPersons(persons.concat(personToAdd));
     setNewName('');
@@ -43,16 +45,6 @@ const App = () => {
     </div>
   )
 }
-
-// const PersonForm = () =>
-//   <form>
-//     <div>
-//       name: <Input value={newName} onChange={onInputChange}/>
-//     </div>
-//     <div>
-//       <button type="submit">add</button>
-//     </div>
-//   </form>
 
 const PhoneBook = ({persons}) =>
   persons.map(person =>
