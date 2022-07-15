@@ -16,15 +16,26 @@ const App = () => {
 
     const nameInput = newName.trim();
 
-    if (!nameInput)
-      return;
+    if (!nameInput) {
+      setNewName('')
+      return
+    }
+
+    if(nameIsPresent(nameInput)) {
+      alert(`${nameInput} is already added to phone book`)
+      return
+    }
 
     const personToAdd = {
       name: nameInput
     }
+    
     setPersons(persons.concat(personToAdd));
     setNewName('');
   }
+
+  const nameIsPresent = (name) =>
+    persons.filter(person => person.name === name).length > 0
 
   return (
     <div>
