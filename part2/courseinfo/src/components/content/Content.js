@@ -1,6 +1,8 @@
 import Part from './Part'
 import Total from './Total'
 
+const countCourseExercises= (courseParts) => 
+  courseParts.reduce((total, part) => total + part.exercises, 0)
 
 const Content = ({course}) => 
   <table>
@@ -12,7 +14,7 @@ const Content = ({course}) =>
       }
     </tbody>
     <tfoot>
-      <Total total={course.countExercises()}/>
+      <Total total={countCourseExercises(course.parts)}/>
     </tfoot>
   </table>
 
