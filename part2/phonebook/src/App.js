@@ -2,13 +2,15 @@ import { useState } from 'react'
 import "./App.css"
 
 import PhoneBook from "./components/PhoneBook"
-import Input from "./components/Input"
-import Button from "./components/Button"
+import NewPhoneForm from './components/NewPhoneForm'
+import Input from './components/Input'
 
-const App = () => {
-  const [persons, setPersons] = useState([])
+const App = ({initData}) => {
+  const [persons, setPersons] = useState(initData)
+  const [showPersons, setShowPersons] = useState(initData)
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
+  const [newFilter, setNewFilter] = useState('')
 
   const addNewPerson = (event) => {
     event.preventDefault();
@@ -24,6 +26,7 @@ const App = () => {
     const personToAdd = newPerson(nameInput, phoneInput)
     
     setPersons(persons.concat(personToAdd));
+    setShowPersons(persons.concat(personToAdd));
     resetInputs();
   }
 
@@ -54,23 +57,38 @@ const App = () => {
     setNewPhone('');
   }
 
+  const nameInputState = {
+    state: newName,
+    onChange: setNewName  
+  }
+
+  const phoneInputState = {
+    state: newPhone,
+    onChange: setNewPhone    
+  }
+
+  const filterByName = (personName) => {
+    setNewFilter(personName);
+    setShowPersons(personName
+      ? persons.filter(person =>
+        person.name.toLowerCase().startsWith(personName.toLowerCase()))
+      : persons)
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNewPerson}>
-        <div>
-          <Input label="name" 
-                 state={newName} 
-                 onStateChange={setNewName} />
-          
-          <Input label="phone" 
-                 state={newPhone} 
-                 onStateChange={setNewPhone} />
-        </div>
-        <Button label="add" />
-      </form>
+      <Input 
+        label="filter by name" 
+        state={newFilter} 
+        onStateChange={filterByName} />
+      <NewPhoneForm 
+        nameInput={nameInputState} 
+        phoneInput={phoneInputState} 
+        onSubmit={addNewPerson} 
+      />
       <h2>Numbers</h2>
-      <PhoneBook persons={persons} />
+      <PhoneBook persons={showPersons} />
     </div>
   )
 }
