@@ -1,64 +1,78 @@
 import { useState } from 'react'
+import "./App.css"
+
+import PhoneBook from "./components/PhoneBook"
+import Input from "./components/Input"
+import Button from "./components/Button"
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
-  ])
-
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
+  const [newPhone, setNewPhone] = useState('')
 
-  const onNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const addNewName = (event) => {
+  const addNewPerson = (event) => {
     event.preventDefault();
 
     const nameInput = newName.trim();
+    const phoneInput = newPhone.trim();
 
-    if (!nameInput) {
-      setNewName('')
+    if (invalidInput(nameInput, phoneInput)) {
+      resetInputs()
       return
     }
 
-    if(nameIsPresent(nameInput)) {
-      alert(`${nameInput} is already added to phone book`)
-      return
-    }
-
-    const personToAdd = {
-      name: nameInput
-    }
+    const personToAdd = newPerson(nameInput, phoneInput)
     
     setPersons(persons.concat(personToAdd));
-    setNewName('');
+    resetInputs();
   }
 
-  const nameIsPresent = (name) =>
-    persons.filter(person => person.name === name).length > 0
+  const invalidInput = (name, phone) => {
+    if (!name || !phone)
+      return true;
+
+    if(phoneAlreadyExists(phone)) {
+      alert(`Phone number ${phone} is already added to phone book`)
+      return true
+    }
+
+    return false
+  }
+
+  const newPerson = (personName, personPhone) => {
+    return({
+      name: personName,
+      phone: personPhone
+    })
+  }
+
+  const phoneAlreadyExists = (phone) =>
+    persons.filter(person => person.phone === phone).length > 0
+
+  const resetInputs = () => {
+    setNewName('');
+    setNewPhone('');
+  }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addNewName}>
+      <form onSubmit={addNewPerson}>
         <div>
-          name: 
-            <input 
-              value={newName} 
-              onChange={onNameChange}/>
+          <Input label="name" 
+                 state={newName} 
+                 onStateChange={setNewName} />
+          
+          <Input label="phone" 
+                 state={newPhone} 
+                 onStateChange={setNewPhone} />
         </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
+        <Button label="add" />
       </form>
       <h2>Numbers</h2>
       <PhoneBook persons={persons} />
     </div>
   )
 }
-
-const PhoneBook = ({persons}) =>
-  persons.map(person =>
-    <p key={person.name}>{person.name}</p>)
 
 export default App
