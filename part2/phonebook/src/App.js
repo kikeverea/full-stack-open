@@ -2,44 +2,51 @@ import { useState } from 'react'
 import "./App.css"
 
 import PhoneBook from "./components/PhoneBook"
-import NewPhoneForm from './components/NewPhoneForm'
-import Input from './components/Input'
+import NewPersonForm from './components/NewPersonForm'
+import Filter from './components/Filter'
 
-const App = ({initData}) => {
-  const [persons, setPersons] = useState(initData)
-  const [showPersons, setShowPersons] = useState(initData)
+const App = () => {
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
-  const [newFilter, setNewFilter] = useState('')
+  const [filter, setFilter] = useState('')
+  const [showPersons, setShowPersons] = useState([]);
 
   const addNewPerson = (event) => {
-    event.preventDefault();
+    event.preventDefault()
 
-    const nameInput = newName.trim();
-    const phoneInput = newPhone.trim();
+    const nameInput = newName.trim()
+    const phoneInput = newPhone.trim()
 
-    if (invalidInput(nameInput, phoneInput)) {
-      resetInputs()
-      return
-    }
+    if (validInput(nameInput, phoneInput)) 
+      addPerson(newPerson(nameInput, phoneInput))
 
-    const personToAdd = newPerson(nameInput, phoneInput)
-    
-    setPersons(persons.concat(personToAdd));
-    setShowPersons(persons.concat(personToAdd));
-    resetInputs();
+    resetInputs()
   }
 
-  const invalidInput = (name, phone) => {
+  const validInput = (name, phone) => {
     if (!name || !phone)
-      return true;
+      return false
 
-    if(phoneAlreadyExists(phone)) {
-      alert(`Phone number ${phone} is already added to phone book`)
-      return true
+    if(personAlreadyExists(name)) {
+      alert(`${name} is already added to phone book`)
+      return false
     }
 
-    return false
+    return true
+  }
+
+  const personAlreadyExists = (name) =>
+    persons.filter(person => person.name === name).length > 0
+
+  const addPerson = (person) => {
+    setPersons(persons.concat(person))
+    setShowPersons(filterByName(showPersons.concat(person), filter))
+  }
+
+  const resetInputs = () => {
+    setNewName('')
+    setNewPhone('')
   }
 
   const newPerson = (personName, personPhone) => {
@@ -48,43 +55,39 @@ const App = ({initData}) => {
       phone: personPhone
     })
   }
-
-  const phoneAlreadyExists = (phone) =>
-    persons.filter(person => person.phone === phone).length > 0
-
-  const resetInputs = () => {
-    setNewName('');
-    setNewPhone('');
-  }
-
-  const nameInputState = {
+  
+  const nameInput = {
     state: newName,
     onChange: setNewName  
   }
 
-  const phoneInputState = {
+  const phoneInput = {
     state: newPhone,
     onChange: setNewPhone    
   }
 
-  const filterByName = (personName) => {
-    setNewFilter(personName);
-    setShowPersons(personName
-      ? persons.filter(person =>
-        person.name.toLowerCase().startsWith(personName.toLowerCase()))
-      : persons)
+  const onFilterChange = (personName) => {
+    setFilter(personName);
+    setShowPersons(filterByName(persons, personName))
+  }
+
+  const filterByName = (array, name) => {
+    return (
+      name
+      ? array.filter(person =>
+          person.name.toLowerCase().startsWith(name.toLowerCase()))
+      : array)
   }
 
   return (
-    <div>
+    <div id='root'>
       <h2>Phonebook</h2>
-      <Input 
-        label="filter by name" 
-        state={newFilter} 
-        onStateChange={filterByName} />
-      <NewPhoneForm 
-        nameInput={nameInputState} 
-        phoneInput={phoneInputState} 
+      <Filter 
+        state={filter} 
+        onFilterChange={onFilterChange} />
+      <NewPersonForm 
+        nameInput={nameInput} 
+        phoneInput={phoneInput} 
         onSubmit={addNewPerson} 
       />
       <h2>Numbers</h2>

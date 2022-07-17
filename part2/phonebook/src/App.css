@@ -28,6 +28,10 @@
   color: #61dafb;
 }
 
+#root {
+  padding-left: 8px;
+}
+
 td:nth-child(1) {
   padding: 4px 16px 4px 16px;
 }

@@ -12,7 +12,7 @@ const PhoneBook = ({persons}) =>
       </thead>
       <tbody>
       {persons.map(person =>
-        <Person key={person.phone} name={person.name} phone={person.phone} />
+        <Person key={person.name} name={person.name} phone={person.phone} />
       )}
       </tbody>
     </table>
