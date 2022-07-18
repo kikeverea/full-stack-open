@@ -1,0 +1,12 @@
+#flag {
+    width: 275px;
+    height: 200px;
+}
+
+td,li {
+    font-size: 1.2em;
+}
+
+td:nth-child(2) {
+    padding-left: 8px;
+}
