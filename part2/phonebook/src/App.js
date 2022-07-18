@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState , useEffect} from 'react'
+import axios from 'axios'
 import "./App.css"
 
 import PhoneBook from "./components/PhoneBook"
@@ -11,6 +12,17 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('')
   const [filter, setFilter] = useState('')
   const [showPersons, setShowPersons] = useState([]);
+
+  const dataHook = response => {
+    setPersons(response.data)
+    setShowPersons(response.data)
+  }
+  
+  useEffect(() => {
+    axios
+    .get("http://localhost:3001/persons")
+    .then(dataHook)
+  }, [])
 
   const addNewPerson = (event) => {
     event.preventDefault()
