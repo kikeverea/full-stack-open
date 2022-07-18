@@ -26,12 +26,16 @@ function App() {
       : countries)
   }
 
+  const setShowCountry = (country) => {
+    setShowCountries([country])
+  }
+
   useEffect(dataHook, [])
 
   return (
     <div className="App">
       <Filter state={filter} onStateChange={filterCountries} />
-      <Countries countries={showCountries} />
+      <Countries countries={showCountries} showCountry={setShowCountry}/>
     </div>
   );
 }
