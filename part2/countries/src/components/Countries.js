@@ -18,7 +18,10 @@ const Countries = ({countries, showCountry}) => {
       <table>
         <tbody>
           {countries.map(country => 
-              <CountryLine country={country} showCountry={showCountry}/>
+              <CountryLine 
+                key={country.name.official} 
+                country={country} 
+                showCountry={showCountry}/>
           )}
         </tbody>    
       </table>

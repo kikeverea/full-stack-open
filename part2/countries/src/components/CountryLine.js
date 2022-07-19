@@ -7,7 +7,7 @@ const CountryLine = ({country, showCountry}) => {
 
   return (
     <tr>
-      <td key={name.official}>
+      <td>
           {name.common}
       </td>
       <td>
