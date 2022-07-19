@@ -1,27 +1,30 @@
 import { useState , useEffect} from 'react'
-import axios from 'axios'
 import "./App.css"
 
 import PhoneBook from "./components/PhoneBook"
 import NewPersonForm from './components/NewPersonForm'
 import Filter from './components/Filter'
+import personService from './services/personService'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [filter, setFilter] = useState('')
-  const [showPersons, setShowPersons] = useState([]);
 
-  const dataHook = response => {
-    setPersons(response.data)
-    setShowPersons(response.data)
-  }
+  const showPersons = 
+    filter
+      ? persons.filter(person =>
+          person.name.toLowerCase().startsWith(filter.toLowerCase()))
+      : persons
   
   useEffect(() => {
-    axios
-    .get("http://localhost:3001/persons")
-    .then(dataHook)
+    personService
+      .getAll()
+      .then(persons => {
+        console.log('persons', persons);
+        setPersons(persons)
+      })
   }, [])
 
   const addNewPerson = (event) => {
@@ -30,9 +33,12 @@ const App = () => {
     const nameInput = newName.trim()
     const phoneInput = newPhone.trim()
 
-    if (validInput(nameInput, phoneInput)) 
-      addPerson(newPerson(nameInput, phoneInput))
-
+    if (validInput(nameInput, phoneInput)) {
+      personService
+        .create(newPerson(nameInput, phoneInput))
+        .then(newPerson => setPersons(persons.concat(newPerson)))
+    }
+      
     resetInputs()
   }
 
@@ -48,26 +54,21 @@ const App = () => {
     return true
   }
 
+  const newPerson = (personName, personPhone) => {
+    return({
+      name: personName,
+      number: personPhone
+    })
+  }
+
   const personAlreadyExists = (name) =>
     persons.filter(person => person.name === name).length > 0
-
-  const addPerson = (person) => {
-    setPersons(persons.concat(person))
-    setShowPersons(filterByName(showPersons.concat(person), filter))
-  }
 
   const resetInputs = () => {
     setNewName('')
     setNewPhone('')
   }
 
-  const newPerson = (personName, personPhone) => {
-    return({
-      name: personName,
-      phone: personPhone
-    })
-  }
-  
   const nameInput = {
     state: newName,
     onChange: setNewName  
@@ -78,25 +79,12 @@ const App = () => {
     onChange: setNewPhone    
   }
 
-  const onFilterChange = (personName) => {
-    setFilter(personName);
-    setShowPersons(filterByName(persons, personName))
-  }
-
-  const filterByName = (array, name) => {
-    return (
-      name
-      ? array.filter(person =>
-          person.name.toLowerCase().startsWith(name.toLowerCase()))
-      : array)
-  }
-
   return (
     <div id='root'>
       <h2>Phonebook</h2>
       <Filter 
         state={filter} 
-        onFilterChange={onFilterChange} />
+        onFilterChange={filter => setFilter(filter)} />
       <NewPersonForm 
         nameInput={nameInput} 
         phoneInput={phoneInput} 
