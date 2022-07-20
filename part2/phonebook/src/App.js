@@ -91,7 +91,7 @@ const App = () => {
         onSubmit={addNewPerson} 
       />
       <h2>Numbers</h2>
-      <PhoneBook persons={showPersons} />
+      <PhoneBook persons={showPersons} onPersonsChange={setPersons} />
     </div>
   )
 }

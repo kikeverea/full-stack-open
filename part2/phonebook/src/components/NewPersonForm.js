@@ -1,5 +1,4 @@
 import Input from "./Input"
-import Button from "./Button"
 
 const NewPersonForm = ({nameInput, phoneInput, onSubmit}) =>
     <>
@@ -14,8 +13,13 @@ const NewPersonForm = ({nameInput, phoneInput, onSubmit}) =>
                     state={phoneInput.state} 
                     onStateChange={phoneInput.onChange} />
         </div>
-        <Button label="add" />
+        <SubmitButton />
         </form>
     </>
+
+const SubmitButton = () =>
+    <div>
+        <button type="submit">add</button>
+    </div>
 
 export default NewPersonForm
