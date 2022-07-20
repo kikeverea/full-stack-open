@@ -4,6 +4,7 @@ import "./App.css"
 import PhoneBook from "./components/PhoneBook"
 import NewPersonForm from './components/NewPersonForm'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import personService from './services/personService'
 
 const App = () => {
@@ -11,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
   const showPersons = 
     filter
@@ -60,11 +62,13 @@ const App = () => {
 
     personService
       .update({...person, number: phoneNumber})
-      .then(updated => 
-        setPersons(persons.map(person => 
-          person.id !== updated.id 
-            ? person
-            : updated)))
+      .then(updated => {
+        setPersons(persons.map(person => person.id !== updated.id 
+                                        ? person
+                                        : updated))
+        displayNotification(
+          `Updated ${updated.name} number to ${updated.number}`, 'success')
+      })
       .catch(error => 
         updateFailed(persons, person) 
       )
@@ -92,7 +96,21 @@ const App = () => {
   const addNewPerson = (person) =>
     personService
       .create(person)
-      .then(newPerson => setPersons(persons.concat(newPerson)))
+      .then(newPerson => {
+        setPersons(persons.concat(newPerson))
+        displayNotification(
+          `Added ${newPerson.name} (${newPerson.number})`,'success')
+      })
+
+  const displayNotification = (message, type) => {
+    setNotification({
+      message: message,
+      type: type
+    })
+    setTimeout(() => {
+      setNotification(null)
+    }, 2000)
+  }
 
   const newPerson = (personName, personPhone) => {
     return({
@@ -122,6 +140,7 @@ const App = () => {
       <Filter 
         state={filter} 
         onFilterChange={filter => setFilter(filter)} />
+      <Notification notification={notification} />
       <NewPersonForm 
         nameInput={nameInput} 
         phoneInput={phoneInput} 
