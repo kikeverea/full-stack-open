@@ -101,12 +101,6 @@ const App = () => {
     })
   }
 
-  const personAlreadyAdded = (name) =>
-    persons.filter(person => person.name === name).length > 0
-
-  const numberAlreadyAdded = (number) => 
-    persons.filter(person => person.number === number).length > 0
-  
     const resetInputs = () => {
     setNewName('')
     setNewPhone('')
