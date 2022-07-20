@@ -65,6 +65,9 @@ const App = () => {
           person.id !== updated.id 
             ? person
             : updated)))
+      .catch(error => 
+        updateFailed(persons, person) 
+      )
   }
 
   const assertDifferentNumbers = (person, number) => {
@@ -79,6 +82,11 @@ const App = () => {
     return window.confirm(
       `${name} is already added to the phonebook. Replace the old number?`
       )
+  }
+
+  const updateFailed = (persons, removed) => {
+    alert(`${removed.name} was previously removed from the phone book. Update failed`)
+    setPersons(persons.filter(person => person.id !== removed.id))
   }
 
   const addNewPerson = (person) =>

@@ -32,15 +32,20 @@ const PersonList = ({persons, onPersonsChange}) =>
 
 const deletePerson = (person, persons, setPersons) => {
   const doDelete = window.confirm(`Delete ${person.name} ?`)
-  const id = person.id;
   if (doDelete) {
     personService
       .remove(person)
       .then(success => {
         if (success) 
-          setPersons(persons.filter(person => person.id !== id))
+          setPersons(removePersonFromList(persons, person))
+      })
+      .catch(error => {
+        setPersons(removePersonFromList(persons, person))
       })
   }
 }
+
+const removePersonFromList = (persons, remove) =>
+  persons.filter(person => person.id !== remove.id)
 
 export default PhoneBook
