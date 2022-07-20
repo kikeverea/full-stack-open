@@ -41,7 +41,8 @@ const App = () => {
       return
     }
       
-    const alreadyAdded = persons.find(person => person.name === nameInput)
+    const alreadyAdded = persons.find(
+      person => person.name.toLowerCase() === nameInput.toLowerCase())
     
     if (alreadyAdded) updatePersonNumber(alreadyAdded, phoneInput)
 
