@@ -27,32 +27,64 @@ const App = () => {
       })
   }, [])
 
-  const addNewPerson = (event) => {
+  const onPersonFormSubmit = (event) => {
     event.preventDefault()
 
     const nameInput = newName.trim()
     const phoneInput = newPhone.trim()
 
-    if (validInput(nameInput, phoneInput)) {
-      personService
-        .create(newPerson(nameInput, phoneInput))
-        .then(newPerson => setPersons(persons.concat(newPerson)))
+    if (invalidInput(nameInput, phoneInput)) {
+      alert("Both 'name' and 'phone' fields are required")
+      resetInputs()
+      return
     }
       
+    const alreadyAdded = persons.find(person => person.name === nameInput)
+    
+    if (alreadyAdded) updatePersonNumber(alreadyAdded, phoneInput)
+
+    else addNewPerson(newPerson(nameInput, phoneInput))
+    
     resetInputs()
   }
 
-  const validInput = (name, phone) => {
-    if (!name || !phone)
-      return false
-
-    if(personAlreadyExists(name)) {
-      alert(`${name} is already added to phone book`)
-      return false
-    }
-
-    return true
+  const invalidInput = (name, phone) => {
+    return !name || !phone
   }
+
+  const updatePersonNumber = (person, phoneNumber) => {
+    const abortUpdate = !assertDifferentNumbers(person, phoneNumber) ||
+                        !confirmUpdate(person.name)                        
+    if(abortUpdate) 
+      return
+
+    personService
+      .update({...person, number: phoneNumber})
+      .then(updated => 
+        setPersons(persons.map(person => 
+          person.id !== updated.id 
+            ? person
+            : updated)))
+  }
+
+  const assertDifferentNumbers = (person, number) => {
+    if(person.number !== number) 
+      return true
+
+    alert(`${person.name} with number ${number} already added to the phonebook`)
+    return false
+  }
+
+  const confirmUpdate = (name) => {
+    return window.confirm(
+      `${name} is already added to the phonebook. Replace the old number?`
+      )
+  }
+
+  const addNewPerson = (person) =>
+    personService
+      .create(person)
+      .then(newPerson => setPersons(persons.concat(newPerson)))
 
   const newPerson = (personName, personPhone) => {
     return({
@@ -61,10 +93,13 @@ const App = () => {
     })
   }
 
-  const personAlreadyExists = (name) =>
+  const personAlreadyAdded = (name) =>
     persons.filter(person => person.name === name).length > 0
 
-  const resetInputs = () => {
+  const numberAlreadyAdded = (number) => 
+    persons.filter(person => person.number === number).length > 0
+  
+    const resetInputs = () => {
     setNewName('')
     setNewPhone('')
   }
@@ -88,7 +123,7 @@ const App = () => {
       <NewPersonForm 
         nameInput={nameInput} 
         phoneInput={phoneInput} 
-        onSubmit={addNewPerson} 
+        onSubmit={onPersonFormSubmit} 
       />
       <h2>Numbers</h2>
       <PhoneBook persons={showPersons} onPersonsChange={setPersons} />

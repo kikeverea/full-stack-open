@@ -35,7 +35,7 @@ const deletePerson = (person, persons, setPersons) => {
   const id = person.id;
   if (doDelete) {
     personService
-      .remove(id)
+      .remove(person)
       .then(success => {
         if (success) 
           setPersons(persons.filter(person => person.id !== id))

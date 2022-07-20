@@ -10,13 +10,13 @@ const create = (person) => {
   return responseData(axios.post(baseUrl, person))
 }
 
-const update = (id, person) => {
-  return responseData(axios.put(`${baseUrl}/${id}`, person))
+const update = (person) => {
+  return responseData(axios.put(`${baseUrl}/${person.id}`, person))
 }
 
-const remove = (id) => {
+const remove = (person) => {
   return axios
-          .delete(`${baseUrl}/${id}`)
+          .delete(`${baseUrl}/${person.id}`)
           .then(response => response.status === 200)
           .catch(error => {
             console.log('delete fail', error)
