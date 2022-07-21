@@ -15,13 +15,7 @@ const update = (person) => {
 }
 
 const remove = (person) => {
-  return axios
-          .delete(`${baseUrl}/${person.id}`)
-          .then(response => response.status === 200)
-          .catch(error => {
-            console.log('delete fail', error)
-            return false
-          })
+  return axios.delete(`${baseUrl}/${person.id}`)
 }
 
 const responseData = (request) => {

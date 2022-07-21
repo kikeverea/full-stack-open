@@ -23,10 +23,7 @@ const App = () => {
   useEffect(() => {
     personService
       .getAll()
-      .then(persons => {
-        console.log('persons', persons);
-        setPersons(persons)
-      })
+      .then(persons => setPersons(persons))
   }, [])
 
   const onPersonFormSubmit = (event) => {
@@ -36,7 +33,7 @@ const App = () => {
     const phoneInput = newPhone.trim()
 
     if (invalidInput(nameInput, phoneInput)) {
-      alert("Both 'name' and 'phone' fields are required")
+      displayError("Both 'name' and 'phone' fields are required")
       resetInputs()
       return
     }
@@ -63,23 +60,15 @@ const App = () => {
 
     personService
       .update({...person, number: phoneNumber})
-      .then(updated => {
-        setPersons(persons.map(person => person.id !== updated.id 
-                                        ? person
-                                        : updated))
-        displayNotification(
-          `Updated ${updated.name} number to ${updated.number}`, 'success')
-      })
-      .catch(error => 
-        updateFailed(persons, person) 
-      )
+      .then(updated => updateSucceeded(updated))
+      .catch(error => updateFailed(persons, person))
   }
 
   const assertDifferentNumbers = (person, number) => {
     if(person.number !== number) 
       return true
 
-    alert(`${person.name} with number ${number} already added to the phonebook`)
+    displaySuccess(`${person.name} with number ${number} already added to the phonebook`)
     return false
   }
 
@@ -89,9 +78,16 @@ const App = () => {
       )
   }
 
+  const updateSucceeded = (updated) => {
+    setPersons(persons.map(person => person.id !== updated.id 
+                                      ? person
+                                      : updated))
+    displaySuccess(`Updated ${updated.name} number to ${updated.number}`)
+  }
+
   const updateFailed = (persons, removed) => {
-    alert(`${removed.name} was previously removed from the phone book. Update failed`)
     setPersons(persons.filter(person => person.id !== removed.id))
+    displayError(`${removed.name} was previously removed from the phone book. Update failed`)
   }
 
   const addNewPerson = (person) =>
@@ -99,9 +95,26 @@ const App = () => {
       .create(person)
       .then(newPerson => {
         setPersons(persons.concat(newPerson))
-        displayNotification(
-          `Added ${newPerson.name} (${newPerson.number})`,'success')
+        displaySuccess(`Added ${newPerson.name} (${newPerson.number})`)
       })
+
+  const deletePerson = (person) => {
+    const doDelete = window.confirm(`Delete ${person.name} ?`)
+    if (doDelete) {
+      personService
+        .remove(person)
+        .then(()=> deleteSucceeded(person))
+        .catch(() => deleteSucceeded(person)) //we want same behaviour as if succeeded 
+    }
+  }
+
+  const deleteSucceeded = (person) => {
+    removeFromPersons(person)
+    displaySuccess(`${person.name} removed from phone book`)
+  }
+
+  const removeFromPersons = (remove) =>
+    setPersons(persons.filter(person => person.id !== remove.id))
 
   const displayNotification = (message, type) => {
     setNotification({
@@ -110,8 +123,14 @@ const App = () => {
     })
     setTimeout(() => {
       setNotification(null)
-    }, 2000)
+    }, 3000)
   }
+
+  const displayError = (message) =>
+    displayNotification(message, 'error')
+
+  const displaySuccess = (message) =>
+    displayNotification(message, 'success')
 
   const newPerson = (personName, personPhone) => {
     return({
@@ -148,7 +167,7 @@ const App = () => {
         onSubmit={onPersonFormSubmit} 
       />
       <h2>Numbers</h2>
-      <PhoneBook persons={showPersons} onPersonsChange={setPersons} />
+      <PhoneBook persons={showPersons} onPersonDelete={deletePerson} />
     </div>
   )
 }
