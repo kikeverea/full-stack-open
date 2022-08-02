@@ -61,14 +61,14 @@ const App = () => {
     personService
       .update({...person, number: phoneNumber})
       .then(updated => updateSucceeded(updated))
-      .catch(error => updateFailed(persons, person))
+      .catch(error => updateFailed(error, person))
   }
 
   const assertDifferentNumbers = (person, number) => {
     if(person.number !== number) 
       return true
 
-    displaySuccess(`${person.name} with number ${number} already added to the phonebook`)
+    displaySuccess(`${person.name} with number ${number} already in the phonebook`)
     return false
   }
 
@@ -85,9 +85,13 @@ const App = () => {
     displaySuccess(`Updated ${updated.name} number to ${updated.number}`)
   }
 
-  const updateFailed = (persons, removed) => {
-    setPersons(persons.filter(person => person.id !== removed.id))
-    displayError(`${removed.name} was previously removed from the phone book. Update failed`)
+  const updateFailed = (error, removed) => {
+
+    if (error.response.status === 404) {
+      setPersons(persons.filter(person => person.id !== removed.id))
+      displayError(`${removed.name} was previously removed from the phone book.\
+                                    Update failed`)
+    }
   }
 
   const addNewPerson = (person) =>
@@ -97,6 +101,24 @@ const App = () => {
         setPersons(persons.concat(newPerson))
         displaySuccess(`Added ${newPerson.name} (${newPerson.number})`)
       })
+      .catch(error => {
+        console.log(error)
+        const message = formatErrorMessage(error)
+        console.log(message)
+        displayError(message)
+      })
+
+  const formatErrorMessage = (error) => {
+    const message = error.response.data.error
+
+    if (error.response.status === 400) {
+      const minLength = message.match('minimum allowed length [(](3)[)]')
+      if (minLength && minLength.length > 0)
+        return `Name must be at least ${minLength[1]} characters`
+    }
+    
+    return message
+  }
 
   const deletePerson = (person) => {
     const doDelete = window.confirm(`Delete ${person.name} ?`)
