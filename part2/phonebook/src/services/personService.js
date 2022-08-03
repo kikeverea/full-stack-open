@@ -11,6 +11,7 @@ const create = (person) => {
 }
 
 const update = (person) => {
+  console.log(person);
   return responseData(axios.put(`${baseUrl}/${person.id}`, person))
 }
 
