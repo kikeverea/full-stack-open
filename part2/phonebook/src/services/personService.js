@@ -1,9 +1,9 @@
-import axios from "axios"
+import axios from 'axios'
 
 const baseUrl = '/api/persons'
 
 const getAll = () => {
-  return responseData(axios.get(baseUrl)) 
+  return responseData(axios.get(baseUrl))
 }
 
 const create = (person) => {
@@ -11,7 +11,7 @@ const create = (person) => {
 }
 
 const update = (person) => {
-  console.log(person);
+  console.log(person)
   return responseData(axios.put(`${baseUrl}/${person.id}`, person))
 }
 
@@ -23,4 +23,4 @@ const responseData = (request) => {
   return request.then(response => response.data)
 }
 
-export default {getAll, create, update, remove}
+export default { getAll, create, update, remove }
