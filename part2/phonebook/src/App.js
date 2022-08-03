@@ -61,14 +61,14 @@ const App = () => {
     personService
       .update({...person, number: phoneNumber})
       .then(updated => updateSucceeded(updated))
-      .catch(error => updateFailed(persons, person))
+      .catch(error => updateFailed(error, person))
   }
 
   const assertDifferentNumbers = (person, number) => {
     if(person.number !== number) 
       return true
 
-    displaySuccess(`${person.name} with number ${number} already added to the phonebook`)
+    displaySuccess(`${person.name} with number ${number} already in the phonebook`)
     return false
   }
 
@@ -85,9 +85,16 @@ const App = () => {
     displaySuccess(`Updated ${updated.name} number to ${updated.number}`)
   }
 
-  const updateFailed = (persons, removed) => {
-    setPersons(persons.filter(person => person.id !== removed.id))
-    displayError(`${removed.name} was previously removed from the phone book. Update failed`)
+  const updateFailed = (error, removed) => {
+
+    if (error.response.status === 404) {
+      setPersons(persons.filter(person => person.id !== removed.id))
+      displayError(`${removed.name} was previously removed from the phone book.\
+                                    Update failed`)
+    }
+    else {
+      displayError(formatErrorMessage(error))
+    }
   }
 
   const addNewPerson = (person) =>
@@ -97,6 +104,14 @@ const App = () => {
         setPersons(persons.concat(newPerson))
         displaySuccess(`Added ${newPerson.name} (${newPerson.number})`)
       })
+      .catch(error => {
+        displayError(formatErrorMessage(error))
+      })
+
+  const formatErrorMessage = (error) => {
+    const message = error.response.data.error.split(":")
+    return message[message.length - 1]
+  }
 
   const deletePerson = (person) => {
     const doDelete = window.confirm(`Delete ${person.name} ?`)
@@ -126,8 +141,10 @@ const App = () => {
     }, 3000)
   }
 
-  const displayError = (message) =>
+  const displayError = (message) => {
+    console.log(message)
     displayNotification(message, 'error')
+  }
 
   const displaySuccess = (message) =>
     displayNotification(message, 'success')
