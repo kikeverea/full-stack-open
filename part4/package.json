@@ -1,0 +1,16 @@
+{
+  "name": "blog-list",
+  "version": "1.0.0",
+  "description": "application that allows users to save information about interesting blogs they have stumbled across on the internet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "author": "Enrique Verea",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.21.0",
+    "nodemon": "^2.0.19"
+  }
+}
