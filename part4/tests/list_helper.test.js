@@ -1,13 +1,6 @@
 const listHelper = require('../utils/list_helper')
 const blogs = require('./dummyBlogs')
 
-test('dummy returns one', () => {
-  const blogs = []
-
-  const result = listHelper.dummy(blogs)
-  expect(result).toBe(1)
-})
-
 describe('total likes', () => {
   test('when list is empty, equals 0', () => {
     expect(listHelper.totalLikes([])).toBe(0)
@@ -46,5 +39,28 @@ describe('favorite blog', () => {
       likes: 12,
     }
     expect(listHelper.favoriteBlog(blogs)).toEqual(expected)
+  })
+})
+
+describe('most blogs', () => {
+  test('when list is empty, author is undefined', () => {
+    expect(listHelper.mostBlogs([])).toBe(undefined)
+  })
+
+  test('when list has one blog, author is author of that blog', () => {
+    const listWithOneBlog = [blogs[0]]
+    const loneBlog = listWithOneBlog[0]
+    expect(listHelper.mostBlogs(listWithOneBlog)).toEqual({
+      author: loneBlog.author,
+      blogs: 1
+    })
+  })
+
+  test('when list has many blogs, determine most blogs by author entries', () => {
+    const expected = {
+      author: 'Robert C. Martin',
+      blogs: 3
+    }
+    expect(listHelper.mostBlogs(blogs)).toEqual(expected)
   })
 })

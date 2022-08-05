@@ -11,7 +11,7 @@ const favoriteBlog = (blogs) => {
   if (blogs.length === 0)
     return undefined
 
-  const favorite = blogs.sort(sortHigherToLower)[0]
+  const favorite = blogs.sort(higherToLowerByPropertySorter('likes'))[0]
 
   return {
     title: favorite.title,
@@ -20,18 +20,36 @@ const favoriteBlog = (blogs) => {
   }
 }
 
-const sortHigherToLower = (blog1, blog2) => {
-  if (blog1.likes < blog2.likes)
-    return 1
+const higherToLowerByPropertySorter = property => {
+  const sortHigherToLower = (param1, param2) => {
+    if (param1[property] < param2[property])
+      return 1
 
-  if (blog1.likes > blog2.likes)
-    return -1
+    if (param1[property] > param2[property])
+      return -1
 
-  return 0
+    return 0
+  }
+  return sortHigherToLower
+}
+
+const mostBlogs = (blogs) => {
+  if (blogs.length === 0)
+    return undefined
+
+  const count = _.countBy(blogs, 'author')
+  const highestBlogCount = Math.max(...(Object.values(count)))
+
+  const author = Object.keys(count).find(key => count[key] === highestBlogCount)
+
+  return {
+    author: author,
+    blogs: highestBlogCount
+  }
 }
 
 module.exports = {
-  dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs
 }
