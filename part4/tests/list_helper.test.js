@@ -23,3 +23,28 @@ describe('total likes', () => {
     expect(listHelper.totalLikes(blogs)).toBe(36)
   })
 })
+
+describe('favorite blog', () => {
+  test('when list is empty, blog is undefined', () => {
+    expect(listHelper.favoriteBlog([])).toBe(undefined)
+  })
+
+  test('when list has one blog, favorite is that blog', () => {
+    const listWithOneBlog = [blogs[0]]
+    const loneBlog = listWithOneBlog[0]
+    expect(listHelper.favoriteBlog(listWithOneBlog)).toEqual({
+      title: loneBlog.title,
+      author: loneBlog.author,
+      likes: loneBlog.likes
+    })
+  })
+
+  test('when list has many blogs, determine favorite blog by likes', () => {
+    const expected = {
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      likes: 12,
+    }
+    expect(listHelper.favoriteBlog(blogs)).toEqual(expected)
+  })
+})
