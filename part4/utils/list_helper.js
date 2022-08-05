@@ -1,6 +1,4 @@
-const dummy = (blogs) => {
-  return 1
-}
+const _ = require('lodash')
 
 const totalLikes = (blogs) => {
   const reducer = (total, blog) =>
