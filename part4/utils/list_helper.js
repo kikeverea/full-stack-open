@@ -1,17 +1,16 @@
 const _ = require('lodash')
 
 const totalLikes = (blogs) => {
-  const reducer = (total, blog) =>
-    total + blog.likes
-
-  return blogs.reduce(reducer, 0)
+  return _.reduce(blogs, (total, blog) => total + blog.likes, 0)
 }
 
 const favoriteBlog = (blogs) => {
   if (blogs.length === 0)
     return undefined
 
-  const favorite = blogs.sort(higherToLowerByPropertySorter('likes'))[0]
+  const favorite = _(blogs)
+    .orderBy('likes', 'desc')
+    .head()
 
   return {
     title: favorite.title,
@@ -20,36 +19,40 @@ const favoriteBlog = (blogs) => {
   }
 }
 
-const higherToLowerByPropertySorter = property => {
-  const sortHigherToLower = (param1, param2) => {
-    if (param1[property] < param2[property])
-      return 1
-
-    if (param1[property] > param2[property])
-      return -1
-
-    return 0
-  }
-  return sortHigherToLower
-}
-
 const mostBlogs = (blogs) => {
   if (blogs.length === 0)
     return undefined
 
-  const count = _.countBy(blogs, 'author')
-  const highestBlogCount = Math.max(...(Object.values(count)))
+  return _(blogs)
+    .countBy('author')
+    .transform((mostBlogs, blogs, author) => {
+      if (blogs > mostBlogs.blogs) {
+        mostBlogs.author = author
+        mostBlogs.blogs = blogs
+      }
+    }, { author: '', blogs: 0 })
+    .value()
+}
 
-  const author = Object.keys(count).find(key => count[key] === highestBlogCount)
+const mostLikes = (blogs) => {
+  if (blogs.length === 0)
+    return undefined
 
-  return {
-    author: author,
-    blogs: highestBlogCount
-  }
+  return _(blogs)
+    .groupBy('author')
+    .transform((mostLikes, blogs, author) => {
+      const likes = _.reduce(blogs, (likes, blog) => likes + blog.likes, 0)
+      if (likes > mostLikes.likes) {
+        mostLikes.author = author
+        mostLikes.likes = likes
+      }
+    }, { author: '', likes: 0 })
+    .value()
 }
 
 module.exports = {
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
