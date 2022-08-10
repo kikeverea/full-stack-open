@@ -27,3 +27,31 @@ describe('query methods', () => {
     expect(blogs[0].id).toBeDefined()
   })
 })
+
+describe('create methods', () => {
+  test('can add valid blogs', async () => {
+    const blog = {
+      title: 'A new blog',
+      author: 'Me',
+      url: 'www.my-url.com',
+      likes: 89
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const currentBlogs = await helper.blogsInDb()
+    const compareBlogs = currentBlogs.map(blog => (
+      {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes
+      }))
+    expect(compareBlogs).toHaveLength(helper.initialBlogs.length + 1)
+    expect(compareBlogs).toContainEqual(blog)
+  })
+})
