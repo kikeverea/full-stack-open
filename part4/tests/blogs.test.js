@@ -59,7 +59,7 @@ describe('create methods', () => {
     const blog = {
       title: 'A new blog',
       author: 'Me',
-      url: 'www.my-url.com',
+      url: 'www.my-url.com'
     }
 
     const response = await api
@@ -71,5 +71,17 @@ describe('create methods', () => {
     const savedBlog = response.body
 
     expect(savedBlog.likes).toEqual(0)
+  })
+
+  test('if title and url are missing, do not add', async () => {
+    const blog = {
+      author: 'Me',
+      likes: 36
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(400)
   })
 })

@@ -9,6 +9,12 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body)
 
+  if (!blog.title && !blog.url) {
+    return response.status(400).json({
+      error: 'Title or url must be provided'
+    })
+  }
+
   if (!blog.likes) {
     blog.likes = 0
   }
