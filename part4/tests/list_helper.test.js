@@ -1,5 +1,5 @@
 const listHelper = require('../utils/list_helper')
-const blogs = require('./dummyBlogs')
+const helper = require('./blogs_helper')
 
 describe('total likes', () => {
   test('when list is empty, equals 0', () => {
@@ -7,13 +7,13 @@ describe('total likes', () => {
   })
 
   test('when list has only one blog, equals the likes of that', () => {
-    const listWithOneBlog = [blogs[0]]
+    const listWithOneBlog = [helper.blogs[0]]
     const loneBlogLikes = listWithOneBlog[0].likes
     expect(listHelper.totalLikes(listWithOneBlog)).toBe(loneBlogLikes)
   })
 
   test('when list has many blogs, equals the likes of all blogs', () => {
-    expect(listHelper.totalLikes(blogs)).toBe(36)
+    expect(listHelper.totalLikes(helper.blogs)).toBe(36)
   })
 })
 
@@ -23,7 +23,7 @@ describe('favorite blog', () => {
   })
 
   test('when list has one blog, favorite is that blog', () => {
-    const listWithOneBlog = [blogs[0]]
+    const listWithOneBlog = [helper.blogs[0]]
     const loneBlog = listWithOneBlog[0]
     expect(listHelper.favoriteBlog(listWithOneBlog)).toEqual({
       title: loneBlog.title,
@@ -38,7 +38,7 @@ describe('favorite blog', () => {
       author: 'Edsger W. Dijkstra',
       likes: 12,
     }
-    expect(listHelper.favoriteBlog(blogs)).toEqual(expected)
+    expect(listHelper.favoriteBlog(helper.blogs)).toEqual(expected)
   })
 })
 
@@ -48,7 +48,7 @@ describe('most blogs', () => {
   })
 
   test('when list has one blog, author is author of that blog', () => {
-    const listWithOneBlog = [blogs[0]]
+    const listWithOneBlog = [helper.blogs[0]]
     const loneBlog = listWithOneBlog[0]
     expect(listHelper.mostBlogs(listWithOneBlog)).toEqual({
       author: loneBlog.author,
@@ -61,7 +61,7 @@ describe('most blogs', () => {
       author: 'Robert C. Martin',
       blogs: 3
     }
-    expect(listHelper.mostBlogs(blogs)).toEqual(expected)
+    expect(listHelper.mostBlogs(helper.blogs)).toEqual(expected)
   })
 })
 
@@ -71,7 +71,7 @@ describe('most likes', () => {
   })
 
   test('when list has one blog, author is author of that blog', () => {
-    const listWithOneBlog = [blogs[0]]
+    const listWithOneBlog = [helper.blogs[0]]
     const loneBlog = listWithOneBlog[0]
     expect(listHelper.mostLikes(listWithOneBlog)).toEqual({
       author: loneBlog.author,
@@ -84,6 +84,6 @@ describe('most likes', () => {
       author: 'Edsger W. Dijkstra',
       likes: 17
     }
-    expect(listHelper.mostLikes(blogs)).toEqual(expected)
+    expect(listHelper.mostLikes(helper.blogs)).toEqual(expected)
   })
 })
