@@ -54,4 +54,22 @@ describe('create methods', () => {
     expect(compareBlogs).toHaveLength(helper.initialBlogs.length + 1)
     expect(compareBlogs).toContainEqual(blog)
   })
+
+  test('if likes property is missing, default to zero', async () => {
+    const blog = {
+      title: 'A new blog',
+      author: 'Me',
+      url: 'www.my-url.com',
+    }
+
+    const response = await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const savedBlog = response.body
+
+    expect(savedBlog.likes).toEqual(0)
+  })
 })
