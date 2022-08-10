@@ -6,7 +6,7 @@ const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  const blogEntities = helper.blogs.map(blog => new Blog(blog))
+  const blogEntities = helper.initialBlogs.map(blog => new Blog(blog))
   const promises = blogEntities.map(blog => blog.save())
   await Promise.all(promises)
 })

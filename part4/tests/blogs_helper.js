@@ -58,5 +58,6 @@ const blogsInDb = async () => {
 
 module.exports = {
   blogs: initialBlogs,
+  initialBlogs,
   blogsInDb
 }
