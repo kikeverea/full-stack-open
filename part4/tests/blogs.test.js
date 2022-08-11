@@ -11,7 +11,7 @@ beforeEach(async () => {
   await Promise.all(promises)
 })
 
-describe('query methods', () => {
+describe('when there are blogs already saved', () => {
   test('returns the correct amount and format of blogs', async () => {
     const response = await api
       .get('/api/blogs')
@@ -28,7 +28,7 @@ describe('query methods', () => {
   })
 })
 
-describe('create methods', () => {
+describe('addition of new blogs', () => {
   test('can add valid blogs', async () => {
     const blog = {
       title: 'A new blog',
