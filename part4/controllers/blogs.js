@@ -23,6 +23,27 @@ blogsRouter.post('/', async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
+blogsRouter.put('/:id', async (request, response) => {
+  console.log('UPDATING BLOG')
+  const { title, author, url, likes = 0 } = request.body
+
+  console.log('LIKES', likes)
+
+  if (!title && !url) {
+    return response.status(400).json({
+      error: 'Title or url must be provided'
+    })
+  }
+
+  const updated = await Blog.findByIdAndUpdate(
+    request.params.id,
+    { title, author, url, likes },
+    { new: true, runValidators: true, context: 'query' }
+  )
+
+  response.status(200).json(updated)
+})
+
 blogsRouter.delete('/:id', async (request, response) => {
   const id = request.params.id
   await Blog.findByIdAndRemove(id)
