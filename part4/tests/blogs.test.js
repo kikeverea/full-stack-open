@@ -84,4 +84,25 @@ describe('addition of new blogs', () => {
       .send(blog)
       .expect(400)
   })
+
+  describe('deletion of blogs', () => {
+    test('succeeds with 204 if id is valid', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+      const toDelete = blogsAtStart[0]
+
+      await api
+        .delete(`/api/blogs/${toDelete.id}`)
+        .expect(204)
+
+      const blogsAtEnd = await helper.blogsInDb()
+
+      expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+
+      const deleted = blogsAtEnd.filter(blog =>
+        blog.title === toDelete.title &&
+        blog.author === toDelete.author)
+
+      expect(deleted).toHaveLength(0)
+    })
+  })
 })
