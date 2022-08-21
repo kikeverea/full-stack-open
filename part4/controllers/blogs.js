@@ -24,10 +24,7 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.put('/:id', async (request, response) => {
-  console.log('UPDATING BLOG')
   const { title, author, url, likes = 0 } = request.body
-
-  console.log('LIKES', likes)
 
   if (!title && !url) {
     return response.status(400).json({
