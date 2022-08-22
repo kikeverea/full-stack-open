@@ -60,4 +60,44 @@ describe('create new users', () => {
     expect(user.blogs).toBeDefined()
     expect(user.blogs).toHaveLength(0)
   })
+
+  test('posting user without username, fails with status 400', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      name: 'user',
+      password: 'sekret'
+    }
+
+    const response = await api.post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const error = response.body
+    expect(error.error).toBeDefined()
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
+
+  test('posting user without password, fails with status 400', async () => {
+    const usersAtStart = await helper.usersInDb()
+
+    const newUser = {
+      name: 'user',
+      username: 'username',
+    }
+
+    const response = await api.post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const error = response.body
+    expect(error.error).toBeDefined()
+
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
 })

@@ -10,12 +10,11 @@ router.get('/', async (request, response) => {
 router.post('/', async (request, response) => {
   const { username, name, password } = request.body
 
-  // const existingUser = await User.findOne({ username })
-  // if (existingUser) {
-  //   return response.status(400).json({
-  //     error: 'username must be unique'
-  //   })
-  // }
+  const invalidUserMessage = invalidUser(username, password)
+
+  if (invalidUserMessage) {
+    return response.status(400).json(invalidUserMessage)
+  }
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(password, saltRounds)
@@ -30,5 +29,19 @@ router.post('/', async (request, response) => {
 
   response.status(201).json(savedUser)
 })
+
+const invalidUser = (username, password) => {
+  if (!username || !password) {
+    return {
+      error: 'username and password must be provided'
+    }
+  }
+
+  if (password.length < 3) {
+    return {
+      error: 'password must be at least 3 characters long'
+    }
+  }
+}
 
 module.exports = router
