@@ -4,7 +4,7 @@
   "description": "application that allows users to save information about interesting blogs they have stumbled across on the internet",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --verbose --force-exit",
+    "test": "clear && cross-env NODE_ENV=test jest --verbose --force-exit",
     "dev": "cross-env NODE_ENV=dev nodemon index.js"
   },
   "jest": {

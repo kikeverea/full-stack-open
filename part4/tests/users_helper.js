@@ -14,7 +14,7 @@ const initialUsers = [
 ]
 
 const usersInDb = async () => {
-  const users = await User.find({})
+  const users = await User.find({}).populate('blogs')
   return users.map(user => user.toJSON())
 }
 

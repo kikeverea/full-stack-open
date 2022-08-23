@@ -1,15 +1,17 @@
 const supertest = require('supertest')
 const app = require('../app')
-const Blog = require('../models/blog')
-const helper = require('./blogs_helper')
+const blogsHelper = require('./blogs_helper')
+const databaseHelper = require('./database_helper')
 const api = supertest(app)
 
-beforeEach(async () => {
-  await Blog.deleteMany({})
-  const blogEntities = helper.initialBlogs.map(blog => new Blog(blog))
-  const promises = blogEntities.map(blog => blog.save())
-  await Promise.all(promises)
+beforeAll(async () => {
+  await databaseHelper.initUsers()
 })
+
+beforeEach(async () => {
+  await databaseHelper.initBlogs()
+},
+20000)
 
 describe('when there are blogs already saved', () => {
   test('returns the correct amount and format of blogs', async () => {
@@ -20,11 +22,20 @@ describe('when there are blogs already saved', () => {
 
     const blogs = response.body
     expect(blogs).toHaveLength(6)
-  }, 20000)
+  })
 
   test('blogs unique identifier is named id', async () => {
-    const blogs = await helper.blogsInDb()
+    const response = await api.get('/api/blogs')
+    const blogs = response.body
+
     expect(blogs[0].id).toBeDefined()
+  })
+
+  test('blogs have a user assigned', async () => {
+    const response = await api.get('/api/blogs')
+    const blogs = response.body
+
+    expect(blogs[0].user).toBeDefined()
   })
 })
 
@@ -37,13 +48,16 @@ describe('addition of new blogs', () => {
       likes: 89
     }
 
-    await api
+    const response = await api
       .post('/api/blogs')
       .send(blog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const currentBlogs = await helper.blogsInDb()
+    const addedBlog = response.body
+    expect(addedBlog.user).toBeDefined()
+
+    const currentBlogs = await blogsHelper.blogsInDb()
     const compareBlogs = currentBlogs.map(blog => (
       {
         title: blog.title,
@@ -51,7 +65,7 @@ describe('addition of new blogs', () => {
         url: blog.url,
         likes: blog.likes
       }))
-    expect(compareBlogs).toHaveLength(helper.initialBlogs.length + 1)
+    expect(compareBlogs).toHaveLength(blogsHelper.initialBlogs.length + 1)
     expect(compareBlogs).toContainEqual(blog)
   })
 
@@ -88,14 +102,14 @@ describe('addition of new blogs', () => {
 
 describe('deletion of blogs', () => {
   test('succeeds with 204 if id is valid', async () => {
-    const blogsAtStart = await helper.blogsInDb()
+    const blogsAtStart = await blogsHelper.blogsInDb()
     const toDelete = blogsAtStart[0]
 
     await api
       .delete(`/api/blogs/${toDelete.id}`)
       .expect(204)
 
-    const blogsAtEnd = await helper.blogsInDb()
+    const blogsAtEnd = await blogsHelper.blogsInDb()
 
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
 
@@ -109,7 +123,7 @@ describe('deletion of blogs', () => {
 
 describe('updating existing blogs', () => {
   test('succeeds with 200 if blog is valid', async () => {
-    const blogsAtStart = await helper.blogsInDb()
+    const blogsAtStart = await blogsHelper.blogsInDb()
     const randomInd = Math.floor(Math.random(blogsAtStart.length - 1))
     const toUpdate = {
       ...blogsAtStart[randomInd],
@@ -123,10 +137,13 @@ describe('updating existing blogs', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    const blogsAtEnd = await helper.blogsInDb()
+    const blogsAtEnd = await blogsHelper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
 
-    expect(response.body).toEqual(toUpdate)
+    const updated = formatForComparison(response.body)
+    const expected = formatForComparison(toUpdate)
+
+    expect(updated).toEqual(expected)
 
     const toUpdateFiltered = blogsAtEnd.filter(blog =>
       blog.title === toUpdate.title &&
@@ -137,8 +154,16 @@ describe('updating existing blogs', () => {
     expect(toUpdateFiltered[0]).toBeDefined()
   })
 
+  const formatForComparison = blog => ({
+    id: blog.id,
+    title: blog.title,
+    author: blog.author,
+    likes: blog.likes,
+    url: blog.url
+  })
+
   test('likes default to zero if are missing', async () => {
-    const blogsAtStart = await helper.blogsInDb()
+    const blogsAtStart = await blogsHelper.blogsInDb()
     const randomInd = Math.floor(Math.random(blogsAtStart.length - 1))
     const toUpdate = {
       ...blogsAtStart[randomInd],
@@ -150,7 +175,7 @@ describe('updating existing blogs', () => {
       .send(toUpdate)
       .expect(200)
 
-    const blogsAtEnd = await helper.blogsInDb()
+    const blogsAtEnd = await blogsHelper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
 
     const toUpdateFiltered = blogsAtEnd.filter(blog =>
@@ -162,7 +187,7 @@ describe('updating existing blogs', () => {
   })
 
   test('fails with 400 if title and url are missing', async () => {
-    const blogsAtStart = await helper.blogsInDb()
+    const blogsAtStart = await blogsHelper.blogsInDb()
     const randomInd = Math.floor(Math.random(blogsAtStart.length - 1))
     const tryUpdate = blogsAtStart[randomInd]
     const toUpdate = {
@@ -176,7 +201,7 @@ describe('updating existing blogs', () => {
       .send(toUpdate)
       .expect(400)
 
-    const blogsAtEnd = await helper.blogsInDb()
+    const blogsAtEnd = await blogsHelper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
 
     const unchanged = blogsAtEnd.filter(blog => Object.is(blog, tryUpdate))
