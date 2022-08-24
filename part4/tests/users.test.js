@@ -1,19 +1,13 @@
 const supertest = require('supertest')
 const app = require('../app')
-const User = require('../models/user')
 const helper = require('./users_helper')
-const bcrypt = require('bcrypt')
-const { users } = require('./users_helper')
+const databaseHelper = require('./database_helper')
 const { default: mongoose } = require('mongoose')
 
 const api = supertest(app)
 
-beforeAll(async () => {
-  await User.deleteMany({})
-  const initialUsers = await helper.initialUsers
-  const userEntities = initialUsers.map(user => new User(user))
-  const promises = userEntities.map(user => user.save())
-  await Promise.all(promises)
+beforeEach(async () => {
+  await databaseHelper.initUsers()
 },
 20000)
 
