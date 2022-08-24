@@ -56,8 +56,61 @@ const blogsInDb = async () => {
   return blogs.map(blog => blog.toJSON())
 }
 
+const dummyBlog = ignoreKeys => {
+  const dummy = {
+    title: 'A new blog',
+    author: 'Me',
+    url: 'www.my-url.com',
+    likes: 89
+  }
+
+  if (ignoreKeys)
+    deleteKeys(dummy, ignoreKeys)
+
+  return dummy
+}
+
+const formatForComparison = (blog, ignoreKeys) => {
+  const formatted = {
+    title: blog.title,
+    author: blog.author,
+    likes: blog.likes,
+    url: blog.url
+  }
+
+  if (ignoreKeys)
+    deleteKeys(formatted, ignoreKeys)
+
+  return formatted
+}
+
+const deleteKeys = (blog, keys) => {
+  for (const key of keys)
+    delete blog[key]
+}
+
+const areEqual = (blog1, blog2, ignoreKeys) => {
+  const compare1 = formatForComparison(blog1, ignoreKeys)
+  const compare2 = formatForComparison(blog2, ignoreKeys)
+
+  const keys = Object.keys(compare1)
+
+  for (const key of keys) {
+    const val1 = compare1[key]
+    const val2 = compare2[key]
+
+    if (val1 !== val2)
+      return false
+  }
+
+  return true
+}
+
 module.exports = {
   blogs: initialBlogs,
   initialBlogs,
-  blogsInDb
+  dummyBlog,
+  blogsInDb,
+  formatForComparison,
+  areEqual
 }

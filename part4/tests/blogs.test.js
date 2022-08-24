@@ -16,89 +16,80 @@ beforeEach(async () => {
 
 describe('when there are blogs already saved', () => {
   test('returns the correct amount and format of blogs', async () => {
+    const blogsInDb = await blogsHelper.blogsInDb()
+
     const response = await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
-    const blogs = response.body
-    expect(blogs).toHaveLength(6)
+    expect(response.body).toHaveLength(blogsInDb.length)
   })
 
   test('blogs unique identifier is named id', async () => {
     const response = await api.get('/api/blogs')
-    const blogs = response.body
-
-    expect(blogs[0].id).toBeDefined()
+    const blog = response.body[0]
+    expect(blog.id).toBeDefined()
   })
 
   test('blogs have a user assigned', async () => {
     const response = await api.get('/api/blogs')
-    const blogs = response.body
-
-    expect(blogs[0].user).toBeDefined()
+    const blog = response.body[0]
+    expect(blog.user).toBeDefined()
   })
 })
 
 describe('addition of new blogs', () => {
   test('can add valid blogs', async () => {
-    const blog = {
-      title: 'A new blog',
-      author: 'Me',
-      url: 'www.my-url.com',
-      likes: 89
-    }
+    const blogsAtStart = await blogsHelper.blogsInDb()
+    const newBlog = blogsHelper.dummyBlog()
 
-    const response = await api
-      .post('/api/blogs')
-      .send(blog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    const addedBlog = response.body
-    expect(addedBlog.user).toBeDefined()
-
-    const currentBlogs = await blogsHelper.blogsInDb()
-    const compareBlogs = currentBlogs.map(blog => (
-      {
-        title: blog.title,
-        author: blog.author,
-        url: blog.url,
-        likes: blog.likes
-      }))
-    expect(compareBlogs).toHaveLength(blogsHelper.initialBlogs.length + 1)
-    expect(compareBlogs).toContainEqual(blog)
+    await assertBlogCreated(newBlog, blogsAtStart)
   })
 
   test('if likes property is missing, default to zero', async () => {
-    const blog = {
-      title: 'A new blog',
-      author: 'Me',
-      url: 'www.my-url.com'
-    }
+    const blogsAtStart = await blogsHelper.blogsInDb()
+    const newBlog = blogsHelper.dummyBlog(['likes'])
 
-    const response = await api
-      .post('/api/blogs')
-      .send(blog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
-
-    const savedBlog = response.body
+    const savedBlog = await assertBlogCreated(newBlog, blogsAtStart, ['likes'])
 
     expect(savedBlog.likes).toEqual(0)
   })
 
   test('if title and url are missing, do not add', async () => {
-    const blog = {
-      author: 'Me',
-      likes: 36
-    }
+    const blogsAtStart = await blogsHelper.blogsInDb()
+
+    const blog = blogsHelper.dummyBlog(['title', 'url'])
 
     await api
       .post('/api/blogs')
       .send(blog)
       .expect(400)
+
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
   })
+
+  const assertBlogCreated = async (newBlog, blogsAtStart, ignoreKeys) => {
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const savedBlog = response.body
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+
+    const filtered = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, newBlog, ignoreKeys))
+
+    expect(savedBlog).toBeDefined()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length + 1)
+    expect(filtered[0]).toBeDefined()
+
+    return savedBlog
+  }
 })
 
 describe('deletion of blogs', () => {
@@ -139,28 +130,13 @@ describe('updating existing blogs', () => {
       .expect('Content-Type', /application\/json/)
 
     const blogsAtEnd = await blogsHelper.blogsInDb()
+
+    const filtered = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, toUpdate))
+
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
-
-    const updated = formatForComparison(response.body)
-    const expected = formatForComparison(toUpdate)
-
-    expect(updated).toEqual(expected)
-
-    const toUpdateFiltered = blogsAtEnd.filter(blog =>
-      blog.title === toUpdate.title &&
-      blog.author === toUpdate.author &&
-      blog.url === toUpdate.url &&
-      blog.likes === toUpdate.likes)
-
-    expect(toUpdateFiltered[0]).toBeDefined()
-  })
-
-  const formatForComparison = blog => ({
-    id: blog.id,
-    title: blog.title,
-    author: blog.author,
-    likes: blog.likes,
-    url: blog.url
+    expect(blogsHelper.areEqual(response.body, toUpdate)).toBe(true)
+    expect(filtered[0]).toBeDefined()
   })
 
   test('likes default to zero if are missing', async () => {
@@ -179,12 +155,10 @@ describe('updating existing blogs', () => {
     const blogsAtEnd = await blogsHelper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
 
-    const toUpdateFiltered = blogsAtEnd.filter(blog =>
-      blog.title === toUpdate.title &&
-      blog.author === toUpdate.author &&
-      blog.url === toUpdate.url)
+    const filtered = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, toUpdate, ['likes']))
 
-    expect(toUpdateFiltered[0].likes).toBe(0)
+    expect(filtered[0].likes).toBe(0)
   })
 
   test('fails with 400 if title and url are missing', async () => {
