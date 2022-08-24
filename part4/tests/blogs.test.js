@@ -1,16 +1,16 @@
 const supertest = require('supertest')
 const app = require('../app')
 const blogsHelper = require('./blogs_helper')
-const databaseHelper = require('./database_helper')
+const initHelper = require('./init_helper')
 const api = supertest(app)
 const { default: mongoose } = require('mongoose')
 
 beforeAll(async () => {
-  await databaseHelper.initUsers()
+  await initHelper.initUsers()
 })
 
 beforeEach(async () => {
-  await databaseHelper.initBlogs()
+  await initHelper.initBlogs()
 },
 20000)
 

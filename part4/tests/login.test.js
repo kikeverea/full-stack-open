@@ -1,4 +1,4 @@
-const databaseHelper = require('./database_helper')
+const initHelper = require('./init_helper')
 const usersHelper = require('./users_helper')
 const supertest = require('supertest')
 const app = require('../app')
@@ -7,7 +7,7 @@ const { default: mongoose } = require('mongoose')
 const api = supertest(app)
 
 beforeEach(async () => {
-  await databaseHelper.initUsers()
+  await initHelper.initUsers()
 })
 
 test('login with correct credentials returns token', async () => {
