@@ -62,6 +62,20 @@ describe('create new users', () => {
     expect(user.blogs).toHaveLength(0)
   })
 
+  test('creating a user with an existing username, fails with status 400', async () => {
+    const usersAtStart = await helper.usersInDb()
+    const randomInd = Math.floor(Math.random(usersAtStart.length - 1))
+    const userInDb = usersAtStart[randomInd]
+
+    const newUser = {
+      username: userInDb.username,
+      name: 'random',
+      password: 'rand'
+    }
+
+    await assertBadRequest(usersAtStart, newUser)
+  })
+
   test('posting user without username, fails with status 400', async () => {
     const usersAtStart = await helper.usersInDb()
 
@@ -70,16 +84,7 @@ describe('create new users', () => {
       password: 'sekret'
     }
 
-    const response = await api.post('/api/users')
-      .send(newUser)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-
-    const error = response.body
-    expect(error.error).toBeDefined()
-
-    const usersAtEnd = await helper.usersInDb()
-    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+    await assertBadRequest(usersAtStart, newUser)
   })
 
   test('posting user without password, fails with status 400', async () => {
@@ -90,6 +95,10 @@ describe('create new users', () => {
       username: 'username',
     }
 
+    await assertBadRequest(usersAtStart, newUser)
+  })
+
+  const assertBadRequest = async (usersAtStart, newUser) => {
     const response = await api.post('/api/users')
       .send(newUser)
       .expect(400)

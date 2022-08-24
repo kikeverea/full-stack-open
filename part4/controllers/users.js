@@ -12,6 +12,12 @@ router.get('/', async (request, response) => {
 router.post('/', async (request, response) => {
   const { username, name, password } = request.body
 
+  const userExists = await User.findOne({ username: username })
+
+  if (userExists) {
+    return response.status(400).json({ error: 'username already exists' })
+  }
+
   const invalidUserMessage = invalidUser(username, password)
 
   if (invalidUserMessage) {
