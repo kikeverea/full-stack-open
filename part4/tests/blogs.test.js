@@ -3,6 +3,7 @@ const app = require('../app')
 const blogsHelper = require('./blogs_helper')
 const databaseHelper = require('./database_helper')
 const api = supertest(app)
+const { default: mongoose } = require('mongoose')
 
 beforeAll(async () => {
   await databaseHelper.initUsers()
@@ -209,10 +210,6 @@ describe('updating existing blogs', () => {
   })
 })
 
-
-
-
-
-
-
-
+afterAll(() => {
+  mongoose.connection.close()
+})

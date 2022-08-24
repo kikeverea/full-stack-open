@@ -4,6 +4,7 @@ const User = require('../models/user')
 const helper = require('./users_helper')
 const bcrypt = require('bcrypt')
 const { users } = require('./users_helper')
+const { default: mongoose } = require('mongoose')
 
 const api = supertest(app)
 
@@ -99,5 +100,9 @@ describe('create new users', () => {
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
-  })
+  }
+})
+
+afterAll(() => {
+  mongoose.connection.close()
 })
