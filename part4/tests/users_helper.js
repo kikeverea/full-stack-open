@@ -18,8 +18,14 @@ const usersInDb = async () => {
   return users.map(user => user.toJSON())
 }
 
+const randomUser = () => {
+  const randomInd = Math.floor(Math.random(initialUsers.length - 1))
+  return initialUsers[randomInd]
+}
+
 module.exports = {
   users: initialUsers,
   initialUsers,
   usersInDb,
+  randomUser
 }

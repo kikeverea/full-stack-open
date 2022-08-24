@@ -1,18 +1,38 @@
 const supertest = require('supertest')
 const app = require('../app')
 const blogsHelper = require('./blogs_helper')
+const usersHelper = require('./users_helper')
 const initHelper = require('./init_helper')
 const api = supertest(app)
 const { default: mongoose } = require('mongoose')
 
+let token
+
 beforeAll(async () => {
   await initHelper.initUsers()
+  token = await loginRandomUser()
 })
 
 beforeEach(async () => {
   await initHelper.initBlogs()
 },
 20000)
+
+const loginRandomUser = async () => {
+  const user = usersHelper.randomUser()
+  const credentials = {
+    username: user.username,
+    password: user.passwordHash
+  }
+
+  const response = await api
+    .post('/api/login')
+    .send(credentials)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  return response.body
+}
 
 describe('when there are blogs already saved', () => {
   test('returns the correct amount and format of blogs', async () => {
@@ -63,6 +83,7 @@ describe('addition of new blogs', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token.token}`)
       .send(blog)
       .expect(400)
 
@@ -71,9 +92,24 @@ describe('addition of new blogs', () => {
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
   })
 
+  test('if no token is provided, fail with status 401', async () => {
+    const blogsAtStart = await blogsHelper.blogsInDb()
+    const newBlog = blogsHelper.dummyBlog()
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(401)
+
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+
+    expect(blogsAtStart).toHaveLength(blogsAtEnd.length)
+  })
+
   const assertBlogCreated = async (newBlog, blogsAtStart, ignoreKeys) => {
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token.token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -87,6 +123,7 @@ describe('addition of new blogs', () => {
     expect(savedBlog).toBeDefined()
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length + 1)
     expect(filtered[0]).toBeDefined()
+    expect(savedBlog.user).toBe(token.id)
 
     return savedBlog
   }
