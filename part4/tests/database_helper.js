@@ -2,20 +2,28 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const usersHelper = require('./users_helper')
 const blogsHelper = require('./blogs_helper')
-
-let usersInitialized
+const bcrypt = require('bcrypt')
 
 const initUsers = async () => {
-  await initCollection(User, usersHelper.initialUsers, user => new User(user))
-  usersInitialized = true
+  const users = await hashPasswords(usersHelper.initialUsers)
+  await initCollection(User, users, user => new User(user))
+}
+
+const hashPasswords = async (users) => {
+  const hashed = []
+  for (const user of users) {
+    hashed.push(
+      {
+        ...user,
+        passwordHash: await bcrypt.hash(user.passwordHash, 10)
+      }
+    )
+  }
+  return hashed
 }
 
 const initBlogs = async () => {
-  if (!usersInitialized) {
-    await initUsers()
-  }
-
-  const usersInDb = await User.find({}).populate('blogs')
+  const usersInDb = await getUsersInDb()
 
   const blogs =
     blogsHelper.initialBlogs.map(blog => blogWithRandomUser(blog, usersInDb))
@@ -23,6 +31,17 @@ const initBlogs = async () => {
   const blogsInDb = await initCollection(Blog, blogs, blog => new Blog(blog))
 
   await addBlogsToTheirUsers(blogsInDb)
+}
+
+const getUsersInDb = async () => {
+  let usersInDb = await User.find({}).populate('blogs')
+
+  if (usersInDb.length === 0) {
+    await initUsers()
+    usersInDb = await User.find({}).populate('blogs')
+  }
+
+  return usersInDb
 }
 
 const initCollection = async (model, data, mapper) => {
