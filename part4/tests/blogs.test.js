@@ -165,7 +165,7 @@ describe('deletion of blogs', () => {
   })
 
   test('fails with 401 if trying to delete a blog from a user different than the' +
-  ' logged-in user', async () =>
+  ' blog creator', async () =>
   {
     const blogsAtStart = await blogsHelper.blogsInDb()
 
@@ -198,15 +198,18 @@ describe('deletion of blogs', () => {
 describe('updating existing blogs', () => {
   test('succeeds with 200 if blog is valid', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
-    const randomInd = Math.floor(Math.random(blogsAtStart.length - 1))
+    const userBlogs = blogsAtStart.filter(blog => blog.user.id === token.id)
+    const randomInd = Math.floor(Math.random(userBlogs.length - 1))
+
     const toUpdate = {
-      ...blogsAtStart[randomInd],
+      ...userBlogs[randomInd],
       title: 'Updated blog',
       author: 'A different author'
     }
 
     const response = await api
       .put(`/api/blogs/${toUpdate.id}`)
+      .set('Authorization', `bearer ${token.token}`)
       .send(toUpdate)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -223,14 +226,17 @@ describe('updating existing blogs', () => {
 
   test('likes default to zero if are missing', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
-    const randomInd = Math.floor(Math.random(blogsAtStart.length - 1))
+    const userBlogs = blogsAtStart.filter(blog => blog.user.id === token.id)
+    const randomInd = Math.floor(Math.random(userBlogs.length - 1))
+
     const toUpdate = {
-      ...blogsAtStart[randomInd],
+      ...userBlogs[randomInd],
       likes: undefined
     }
 
     await api
       .put(`/api/blogs/${toUpdate.id}`)
+      .set('Authorization', `bearer ${token.token}`)
       .send(toUpdate)
       .expect(200)
 
@@ -245,23 +251,80 @@ describe('updating existing blogs', () => {
 
   test('fails with 400 if title and url are missing', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
-    const randomInd = Math.floor(Math.random(blogsAtStart.length - 1))
-    const tryUpdate = blogsAtStart[randomInd]
+    const userBlogs = blogsAtStart.filter(blog => blog.user.id === token.id)
+    const randomInd = Math.floor(Math.random(userBlogs.length - 1))
+
     const toUpdate = {
-      ...tryUpdate,
+      ...userBlogs[randomInd],
       title: undefined,
       url: undefined
     }
 
     await api
       .put(`/api/blogs/${toUpdate.id}`)
+      .set('Authorization', `bearer ${token.token}`)
       .send(toUpdate)
       .expect(400)
 
     const blogsAtEnd = await blogsHelper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
 
-    const unchanged = blogsAtEnd.filter(blog => Object.is(blog, tryUpdate))
+    const unchanged = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, toUpdate))
+
+    expect(unchanged).toHaveLength(0)
+  })
+
+  test('fails with 401 if token is not provided', async () => {
+    const blogsAtStart = await blogsHelper.blogsInDb()
+    const userBlogs = blogsAtStart.filter(blog => blog.user.id === token.id)
+    const randomInd = Math.floor(Math.random(userBlogs.length - 1))
+
+
+    const toUpdate = {
+      ...userBlogs[randomInd],
+      title: 'Other title'
+    }
+
+    await api
+      .put(`/api/blogs/${toUpdate.id}`)
+      .send(toUpdate)
+      .expect(401)
+
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+
+    const unchanged = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, toUpdate))
+
+    expect(unchanged).toHaveLength(0)
+  })
+
+  test('fails with 401 if trying to update a blog from a user different than the' +
+  ' blog creator', async () =>
+  {
+    const blogsAtStart = await blogsHelper.blogsInDb()
+
+    const blogsFromOtherUser = blogsAtStart.filter(blog =>
+      blog.user.id !== token.id)
+
+    const toUpdate = {
+      ...blogsFromOtherUser[0],
+      title: 'Other title'
+    }
+
+    await api
+      .put(`/api/blogs/${toUpdate.id}`)
+      .set('Authorization', `bearer ${token.token}`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+
+    const unchanged = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, toUpdate))
+
     expect(unchanged).toHaveLength(0)
   })
 })
