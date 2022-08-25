@@ -46,7 +46,7 @@ describe('when there are blogs already saved', () => {
     expect(response.body).toHaveLength(blogsInDb.length)
   })
 
-  test('blogs unique identifier is named id', async () => {
+  test('blogs has id property', async () => {
     const response = await api.get('/api/blogs')
     const blog = response.body[0]
     expect(blog.id).toBeDefined()
@@ -60,73 +60,82 @@ describe('when there are blogs already saved', () => {
 })
 
 describe('addition of new blogs', () => {
-  test('can add valid blogs', async () => {
+  test('adding valid blog returns 201', async () => {
+    const newBlog = blogsHelper.dummyBlog()
+    await postBlog(newBlog).expect(201)
+  })
+
+  test('adding valid blog returns saved blog', async () => {
+    const newBlog = blogsHelper.dummyBlog()
+    const response = await postBlog(newBlog)
+    const savedBlog = response.body
+    expect(blogsHelper.areEqual(savedBlog, newBlog))
+  })
+
+  test('blogs after adding valid blog contain added blog', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
     const newBlog = blogsHelper.dummyBlog()
 
-    await assertBlogCreated(newBlog, blogsAtStart)
+    const response = await postBlog(newBlog)
+    const savedBlog = response.body
+
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+    const filtered = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, savedBlog))
+
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length + 1)
+    expect(filtered[0]).toBeDefined()
   })
 
   test('if likes property is missing, default to zero', async () => {
-    const blogsAtStart = await blogsHelper.blogsInDb()
-    const newBlog = blogsHelper.dummyBlog(['likes'])
+    const blogNoLikes = blogsHelper.dummyBlog(['likes'])
 
-    const savedBlog = await assertBlogCreated(newBlog, blogsAtStart, ['likes'])
+    const response = await postBlog(blogNoLikes)
+    const savedBlog = response.body
 
     expect(savedBlog.likes).toEqual(0)
   })
 
-  test('if title and url are missing, do not add', async () => {
+  test('if title and url are missing, fail with status 400', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
-
     const blog = blogsHelper.dummyBlog(['title', 'url'])
 
-    await api
-      .post('/api/blogs')
-      .set('Authorization', `bearer ${token.token}`)
-      .send(blog)
-      .expect(400)
+    const response = await postBlog(blog).expect(400)
 
-    const blogsAtEnd = await blogsHelper.blogsInDb()
-
-    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+    await assertCreationFailed(response, blog, blogsAtStart)
   })
 
   test('if no token is provided, fail with status 401', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
-    const newBlog = blogsHelper.dummyBlog()
+    const blog = blogsHelper.dummyBlog()
 
-    await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(401)
-
-    const blogsAtEnd = await blogsHelper.blogsInDb()
-
-    expect(blogsAtStart).toHaveLength(blogsAtEnd.length)
-  })
-
-  const assertBlogCreated = async (newBlog, blogsAtStart, ignoreKeys) => {
     const response = await api
       .post('/api/blogs')
-      .set('Authorization', `bearer ${token.token}`)
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+      .send(blog)
+      .expect(401)
 
-    const savedBlog = response.body
+    await assertCreationFailed(response, blog, blogsAtStart)
+  })
+
+  const assertCreationFailed = async (response, newBlog, blogsAtStart) => {
+    const error = response.body
     const blogsAtEnd = await blogsHelper.blogsInDb()
-
     const filtered = blogsAtEnd.filter(blog =>
-      blogsHelper.areEqual(blog, newBlog, ignoreKeys))
+      blogsHelper.areEqual(blog, newBlog))
 
-    expect(savedBlog).toBeDefined()
-    expect(blogsAtEnd).toHaveLength(blogsAtStart.length + 1)
-    expect(filtered[0]).toBeDefined()
-    expect(savedBlog.user).toBe(token.id)
-
-    return savedBlog
+    expect(error.error).toBeDefined()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+    expect(filtered).toHaveLength(0)
   }
+
+  const postBlog = blog => {
+    return api
+      .post('/api/blogs')
+      .set('Authorization', `bearer ${token.token}`)
+      .send(blog)
+      .expect('Content-Type', /application\/json/)
+  }
+
 })
 
 describe('deletion of blogs', () => {
@@ -327,6 +336,26 @@ describe('updating existing blogs', () => {
 
     expect(unchanged).toHaveLength(0)
   })
+
+  const assertBlogUpdated = async (toUpdate, blogsAtStart) => {
+    const response = await api
+      .put(`/api/blogs/${toUpdate.id}`)
+      .set('Authorization', `bearer ${token.token}`)
+      .send(toUpdate)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const updated = response.body
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+
+    const filtered = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, toUpdate))
+
+    expect(updated).toBeDefined()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+    expect(blogsHelper.areEqual(response.body, toUpdate)).toBe(true)
+    expect(filtered[0]).toBeDefined()
+  }
 })
 
 afterAll(() => {
