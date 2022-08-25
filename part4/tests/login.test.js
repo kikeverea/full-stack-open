@@ -28,6 +28,7 @@ test('login with correct credentials returns token', async () => {
   const token = response.body
 
   expect(token.token).toBeDefined()
+  expect(token.id).toBeDefined()
   expect(token.name).toBe(user.name)
   expect(token.username).toBe(user.username)
 })

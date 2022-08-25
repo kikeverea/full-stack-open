@@ -4,6 +4,8 @@ const usersHelper = require('./users_helper')
 const blogsHelper = require('./blogs_helper')
 const bcrypt = require('bcrypt')
 
+let lastUsedUserInd = usersHelper.initialUsers.length
+
 const initUsers = async () => {
   const users = await hashPasswords(usersHelper.initialUsers)
   await initCollection(User, users, user => new User(user))
@@ -26,7 +28,7 @@ const initBlogs = async () => {
   const usersInDb = await getUsersInDb()
 
   const blogs =
-    blogsHelper.initialBlogs.map(blog => blogWithRandomUser(blog, usersInDb))
+    blogsHelper.initialBlogs.map(blog => blogWithNextUser(blog, usersInDb))
 
   const blogsInDb = await initCollection(Blog, blogs, blog => new Blog(blog))
 
@@ -51,16 +53,24 @@ const initCollection = async (model, data, mapper) => {
   return await Promise.all(promises)
 }
 
-const blogWithRandomUser = (blog, users) => ({
+const blogWithNextUser = (blog, users) => ({
   ... blog,
-  user: users[Math.floor(Math.random(users.length - 1))]._id
+  user: users[nextUserInd()]._id
 })
+
+const nextUserInd = () => {
+  if (++lastUsedUserInd >= usersHelper.initialUsers.length)
+    lastUsedUserInd = 0
+
+  return lastUsedUserInd
+}
 
 const addBlogsToTheirUsers = async blogs => {
   for (const blog of blogs) {
     const user = await User.findById(blog.user)
-    user.blogs = user.blogs ? user.blogs.concat(user._id) : [user._id]
+    user.blogs = user.blogs ? user.blogs.concat(blog._id) : [blog._id]
     await user.save()
+    // console.log('saved user', saved);
   }
 }
 

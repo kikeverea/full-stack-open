@@ -132,22 +132,67 @@ describe('addition of new blogs', () => {
 describe('deletion of blogs', () => {
   test('succeeds with 204 if id is valid', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
-    const toDelete = blogsAtStart[0]
+
+    const userBlogs = blogsAtStart.filter(blog =>
+      blog.user.id === token.id)
+
+    const toDelete = userBlogs[0]
 
     await api
       .delete(`/api/blogs/${toDelete.id}`)
+      .set('Authorization', `bearer ${token.token}`)
       .expect(204)
 
     const blogsAtEnd = await blogsHelper.blogsInDb()
 
-    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
-
     const deleted = blogsAtEnd.filter(blog =>
-      blog.title === toDelete.title &&
-      blog.author === toDelete.author)
+      blogsHelper.areEqual(blog, toDelete))
 
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
     expect(deleted).toHaveLength(0)
   })
+
+  test('fails with 401 if token is not provided', async () => {
+    const blogsAtStart = await blogsHelper.blogsInDb()
+    const toDelete = blogsAtStart[0]
+
+    const response = await api
+      .delete(`/api/blogs/${toDelete.id}`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    await assertDeletionFailed(toDelete, response, blogsAtStart)
+  })
+
+  test('fails with 401 if trying to delete a blog from a user different than the' +
+  ' logged-in user', async () =>
+  {
+    const blogsAtStart = await blogsHelper.blogsInDb()
+
+    const blogsFromOtherUser = blogsAtStart.filter(blog =>
+      blog.user.id !== token.id)
+
+    const toDelete = blogsFromOtherUser[0]
+
+    const response = await api
+      .delete(`/api/blogs/${toDelete.id}`)
+      .set('Authorization', `bearer ${token.token}`)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    await assertDeletionFailed(toDelete, response, blogsAtStart)
+  })
+
+  const assertDeletionFailed = async (toDelete, response, blogsAtStart) => {
+    const blogsAtEnd = await blogsHelper.blogsInDb()
+
+    const filtered = blogsAtEnd.filter(blog =>
+      blogsHelper.areEqual(blog, toDelete))
+
+    expect(response.body.error).toBeDefined()
+    expect(blogsAtEnd).toHaveLength(blogsAtStart.length)
+    expect(filtered[0]).toBeDefined()
+  }
 })
 
 describe('updating existing blogs', () => {
