@@ -1,9 +1,7 @@
-const supertest = require('supertest')
-const app = require('../app')
 const blogsHelper = require('./blogs_helper')
 const usersHelper = require('./users_helper')
 const initHelper = require('./init_helper')
-const api = supertest(app)
+const request = require('./request_helper')
 const { default: mongoose } = require('mongoose')
 
 const filterBlogEqualTo = blogsHelper.filterBlogEqualTo
@@ -11,6 +9,7 @@ const getBlogFromTokenUser = blogsHelper.getBlogFromTokenUser
 const getBlogFromUserDifferentToTokenUser =
   blogsHelper.getBlogFromUserDifferentToTokenUser
 
+const baseUri = '/api/blogs'
 let token
 
 beforeAll(async () => {
@@ -30,36 +29,51 @@ const loginRandomUser = async () => {
     password: user.passwordHash
   }
 
-  const response = await api
-    .post('/api/login')
-    .send(credentials)
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
+  const response =
+    await request('post', '/api/login', { payload: credentials }).expect(200)
 
   return response.body
+}
+
+const addTokenToOptions = options => {
+  if (!options)
+    return { auth: token }
+
+  if (options.auth === undefined || options.auth === true) {
+    return {
+      ...options,
+      auth: token
+    }
+  }
+
+  return options
 }
 
 describe('when there are blogs already saved', () => {
   test('returns the correct amount of blogs', async () => {
     const blogsInDb = await blogsHelper.blogsInDb()
-    const response = await buildRequest({ type: 'get' }).expect(200)
+    const response = await getBlogs().expect(200)
 
     expect(response.body).toHaveLength(blogsInDb.length)
   })
 
   test('blogs has id property', async () => {
-    const response = await buildRequest({ type: 'get' })
+    const response = await getBlogs()
     const blog = response.body[0]
 
     expect(blog.id).toBeDefined()
   })
 
   test('blogs have a user assigned', async () => {
-    const response = await buildRequest({ type: 'get' })
+    const response = await getBlogs()
     const blog = response.body[0]
 
     expect(blog.user).toBeDefined()
   })
+
+  const getBlogs = () => {
+    return request('get', baseUri, {})
+  }
 })
 
 /************* POST *****************/
@@ -127,7 +141,8 @@ describe('addition of new blogs', () => {
   }
 
   const postBlog = (blog, options) => {
-    return buildRequest({ type: 'post', payload: blog, ...options })
+    options = addTokenToOptions(options)
+    return request('post', baseUri, { payload: blog, ...options })
   }
 })
 
@@ -139,7 +154,7 @@ describe('deletion of blogs', () => {
     await deleteBlog(blog, { json: false }).expect(204)
   })
 
-  test('blog is no longer in blogs after deletion', async () => {
+  test('deleted blog cannot be found in blogs collection', async () => {
     const blogsAtStart = await blogsHelper.blogsInDb()
     const toDelete = await getBlogFromTokenUser(token, blogsAtStart)
 
@@ -171,7 +186,8 @@ describe('deletion of blogs', () => {
   })
 
   const deleteBlog = (blog, options) => {
-    return buildRequest({ type: 'delete', payload: blog, ...options })
+    options = addTokenToOptions(options)
+    return request('delete', baseUri, { payload: blog, ...options })
   }
 
   const assertDeletionFailed = async (toDelete, response, blogsAtStart) => {
@@ -269,7 +285,8 @@ describe('updating existing blogs', () => {
   }
 
   const updateBlog = (blog, options) => {
-    return buildRequest({ type: 'put', payload: blog, ...options })
+    options = addTokenToOptions(options)
+    return request('put', baseUri, { payload: blog, ...options })
   }
 
   const assertUpdateFailed = async (toUpdate) => {
@@ -279,34 +296,6 @@ describe('updating existing blogs', () => {
     expect(inCollection).toBeUndefined()
   }
 })
-
-const buildRequest = ({ type, payload, json=true, auth=true }) => {
-  const req = getRequestWithType(type, payload)
-
-  if (auth) {
-    req.set('Authorization', `bearer ${token.token}`)
-  }
-
-  if (json) {
-    req.expect('Content-Type', /application\/json/)
-  }
-
-  return req
-}
-
-const getRequestWithType = (type, payload) => {
-  const baseUri = '/api/blogs'
-  switch (type.toLowerCase()) {
-  case 'get' :
-    return api.get(baseUri)
-  case 'post' :
-    return api.post(baseUri).send(payload)
-  case 'put' :
-    return api.put(`${baseUri}/${payload.id}`).send(payload)
-  case 'delete' :
-    return api.delete(`${baseUri}/${payload.id}`)
-  }
-}
 
 afterAll(() => {
   mongoose.connection.close()
