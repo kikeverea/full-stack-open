@@ -65,7 +65,7 @@ const dummyBlog = ignoreKeys => {
   }
 
   if (ignoreKeys)
-    deleteKeys(dummy, ignoreKeys)
+    deleteKeys(dummy, ignoreKeys.ignore)
 
   return dummy
 }
