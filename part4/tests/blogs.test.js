@@ -6,6 +6,11 @@ const initHelper = require('./init_helper')
 const api = supertest(app)
 const { default: mongoose } = require('mongoose')
 
+const filterBlogEqualTo = blogsHelper.filterBlogEqualTo
+const getBlogFromTokenUser = blogsHelper.getBlogFromTokenUser
+const getBlogFromUserDifferentToTokenUser =
+  blogsHelper.getBlogFromUserDifferentToTokenUser
+
 let token
 
 beforeAll(async () => {
@@ -274,33 +279,6 @@ describe('updating existing blogs', () => {
     expect(inCollection).toBeUndefined()
   }
 })
-
-const getBlogFromTokenUser = async (token, blogsAtStart) => {
-  if (!blogsAtStart) {
-    blogsAtStart = await blogsHelper.blogsInDb()
-  }
-
-  return getBlogFrom(blogsAtStart, blog => blog.user.id === token.id)
-}
-
-const getBlogFromUserDifferentToTokenUser = async (token, blogsAtStart) => {
-  if (!blogsAtStart) {
-    blogsAtStart = await blogsHelper.blogsInDb()
-  }
-
-  return getBlogFrom(blogsAtStart, blog => blog.user.id !== token.id)
-}
-
-const filterBlogEqualTo = (collection, compare, options) => {
-  return getBlogFrom(collection, blog =>
-    blogsHelper.areEqual(blog, compare, options ? options.ignore : undefined))
-}
-
-const getBlogFrom = (blogs, predicate) => {
-  const filtered = blogs.filter(predicate)
-
-  return filtered[0]
-}
 
 const buildRequest = ({ type, payload, json=true, auth=true }) => {
   const req = getRequestWithType(type, payload)

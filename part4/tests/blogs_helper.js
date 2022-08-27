@@ -106,11 +106,41 @@ const areEqual = (blog1, blog2, ignoreKeys) => {
   return true
 }
 
+const getBlogFromTokenUser = async (token, blogsAtStart) => {
+  if (!blogsAtStart) {
+    blogsAtStart = await blogsInDb()
+  }
+
+  return getBlogFrom(blogsAtStart, blog => blog.user.id === token.id)
+}
+
+const getBlogFromUserDifferentToTokenUser = async (token, blogsAtStart) => {
+  if (!blogsAtStart) {
+    blogsAtStart = await blogsInDb()
+  }
+
+  return getBlogFrom(blogsAtStart, blog => blog.user.id !== token.id)
+}
+
+const filterBlogEqualTo = (collection, compare, options) => {
+  return getBlogFrom(collection, blog =>
+    areEqual(blog, compare, options ? options.ignore : undefined))
+}
+
+const getBlogFrom = (blogs, predicate) => {
+  const filtered = blogs.filter(predicate)
+
+  return filtered[0]
+}
+
 module.exports = {
   blogs: initialBlogs,
   initialBlogs,
   dummyBlog,
   blogsInDb,
   formatForComparison,
-  areEqual
+  areEqual,
+  getBlogFromTokenUser,
+  getBlogFromUserDifferentToTokenUser,
+  filterBlogEqualTo
 }
