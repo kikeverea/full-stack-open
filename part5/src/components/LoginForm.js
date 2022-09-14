@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import FormField from './FormField'
+import FormSubmit from './FormSubmit'
 
 const LoginForm = ({ loginService, userLoggedIn }) => {
 
@@ -33,9 +34,7 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
         <tbody>
           <FormField name='User' value={username} inputChange={setUsername} />
           <FormField name='Password' value={password} inputChange={setPassword} />
-          <tr>
-            <td><input type="submit" value='Login' /></td>
-          </tr>
+          <FormSubmit value='Login' />
         </tbody>
       </table>
       <br />
