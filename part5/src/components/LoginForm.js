@@ -19,7 +19,6 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
       setPassword('')
     }
     catch (exception) {
-      console.log(exception)
       errorHelper.displayErrorMessage('Wrong credentials', setErrorMessage)
     }
   }
