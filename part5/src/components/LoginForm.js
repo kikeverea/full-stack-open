@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import FormField from './FormField'
 import FormSubmit from './FormSubmit'
+import ErrorMessage from './ErrorMessage'
+import errorHelper from '../util/errorMessageHelper'
 
 const LoginForm = ({ loginService, userLoggedIn }) => {
 
@@ -12,20 +14,14 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
     event.preventDefault()
     try {
       const user = await loginService.login(username, password)
-      userLoggedIn(user)
+      await userLoggedIn(user)
       setUsername('')
       setPassword('')
     }
     catch (exception) {
-      displayWrongCredentials()
+      console.log(exception)
+      errorHelper.displayErrorMessage('Wrong credentials', setErrorMessage)
     }
-  }
-
-  const displayWrongCredentials = () => {
-    setErrorMessage('Wrong credentials')
-    setTimeout(() => {
-      setErrorMessage(null)
-    }, 5000)
   }
 
   return (
@@ -38,7 +34,7 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
         </tbody>
       </table>
       <br />
-      <div style={{ color: 'red' }}>{ errorMessage }</div>
+      <ErrorMessage errorMessage={ errorMessage } />
       <br />
     </form>
   )
