@@ -5,8 +5,8 @@ const loginUrl = '/api/login'
 const login = async (username, password) => {
   const response = await axios.post(loginUrl, { username, password })
   const user = response.data
-  
-  return user
+
+  return response.status === 200 ? user : null
 }
 
 export default { login }

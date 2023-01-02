@@ -20,6 +20,7 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
     }
     catch (exception) {
       errorHelper.displayErrorMessage('Wrong credentials', setErrorMessage)
+      await userLoggedIn(null)
     }
   }
 
