@@ -11,20 +11,21 @@ const NewBlogForm = ({ createNewBlog }) => {
   const [url, setUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
 
-  const handleNewBlog = (event) => {
+  const onFormSubmit = (event) => {
     event.preventDefault()
 
     const validInput = validateInput()
-    
+
     if(validInput) {
       const newBlog = {
         title: title,
         author: author,
         url: url
-      } 
+      }
       setTitle('')
       setAuthor('')
       setUrl('')
+
       createNewBlog(newBlog)
     }
   }
@@ -48,7 +49,7 @@ const NewBlogForm = ({ createNewBlog }) => {
       errorCount++
     }
 
-    if (errorCount > 1) 
+    if (errorCount > 1)
       error = replaceLastComma(error)
 
     if(error) {
@@ -73,7 +74,7 @@ const NewBlogForm = ({ createNewBlog }) => {
   return (
     <div>
       <h2>Create new Blog</h2>
-      <form onSubmit={handleNewBlog}>
+      <form onSubmit={ onFormSubmit }>
         <table>
           <tbody>
             <FormField name='Title' value={title} inputChange={setTitle} />
