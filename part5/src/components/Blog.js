@@ -3,7 +3,7 @@ import {useState} from "react";
 import ValueToggleButton from "./ValueToggleButton";
 import blogsService from '../services/blogs'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, onBlogChange }) => {
 
   const [ likes, setLikes ] = useState(blog.likes ? blog.likes : 0)
   const [ showFullContent, setShowFullContent ] = useState(false)
@@ -32,6 +32,7 @@ const Blog = ({ blog }) => {
     const newLikes = likes + 1
     setLikes(newLikes)
     blog.likes = newLikes
+    onBlogChange(blog)
 
     await blogsService.updateBlog(blog)
   }
