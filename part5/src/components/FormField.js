@@ -1,13 +1,9 @@
+import Flex from "./Flex";
+
 const FormField = ({ name, value, inputChange }) => {
 
-  const style = {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: 10
-  }
-
   return (
-    <div style={ style }>
+    <Flex direction={ 'row' } customStyle={{ gap: 20, justifyContent: 'space-between'}}>
       <label htmlFor={name}>{name}</label>
       <input
         id={name}
@@ -15,7 +11,7 @@ const FormField = ({ name, value, inputChange }) => {
         value={value}
         onChange={({target}) => inputChange(target.value)}
       />
-    </div>
+    </Flex>
   )
 }
 
