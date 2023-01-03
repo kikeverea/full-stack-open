@@ -1,17 +1,17 @@
 import { useState } from 'react'
 import FormField from './FormField'
-import FormSubmit from './FormSubmit'
 import ErrorMessage from './ErrorMessage'
 import errorHelper from '../util/errorMessageHelper'
+import FormButtons from "./FormButtons";
 
-const NewBlogForm = ({ createNewBlog }) => {
+const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
 
-  const onFormSubmit = (event) => {
+  const submitBlog = (event) => {
     event.preventDefault()
 
     const validInput = validateInput()
@@ -26,7 +26,7 @@ const NewBlogForm = ({ createNewBlog }) => {
       setAuthor('')
       setUrl('')
 
-      createNewBlog(newBlog)
+      onFormSubmit(newBlog)
     }
   }
 
@@ -67,22 +67,27 @@ const NewBlogForm = ({ createNewBlog }) => {
 
   const appendToError = (error, text) => {
     return error.length === 0
-    ? error = text
-    : error = `${error}, ${text}`
+      ? text
+      : `${error}, ${text}`
+  }
+
+  const formStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 10
   }
 
   return (
     <div>
       <h2>Create new Blog</h2>
-      <form onSubmit={ onFormSubmit }>
-        <table>
-          <tbody>
-            <FormField name='Title' value={title} inputChange={setTitle} />
-            <FormField name='Author' value={author} inputChange={setAuthor} />
-            <FormField name='Url' value={url} inputChange={setUrl} />
-            <FormSubmit value='Submit' />
-          </tbody>
-        </table>
+      <form onSubmit={ submitBlog } style={ formStyle }>
+        <FormField name='Title' value={title} inputChange={setTitle} />
+        <FormField name='Author' value={author} inputChange={setAuthor} />
+        <FormField name='Url' value={url} inputChange={setUrl} />
+        <FormButtons>
+          <input type="submit" value='Submit' />
+          <button onClick={ onCancel }>Cancel</button>
+        </FormButtons>
       </form>
       <ErrorMessage errorMessage={ errorMessage } />
       <br />

@@ -8,7 +8,6 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -19,7 +18,6 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
       setPassword('')
     }
     catch (exception) {
-      errorHelper.displayErrorMessage('Wrong credentials', setErrorMessage)
       await userLoggedIn(null)
     }
   }
@@ -33,8 +31,6 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
           <FormSubmit value='Login' />
         </tbody>
       </table>
-      <br />
-      <ErrorMessage errorMessage={ errorMessage } />
       <br />
     </form>
   )

@@ -1,18 +1,22 @@
-const FormField = ({ name, value, inputChange }) => (
-  <tr>
-    <td>
-      <label htmlFor={ name }>{ name }</label>
-    </td>
-    <td />
-    <td>
+const FormField = ({ name, value, inputChange }) => {
+
+  const style = {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10
+  }
+
+  return (
+    <div style={ style }>
+      <label htmlFor={name}>{name}</label>
       <input
-        id={ name } 
+        id={name}
         type="text"
-        value={ value }
-        onChange={({ target }) => inputChange(target.value)}
+        value={value}
+        onChange={({target}) => inputChange(target.value)}
       />
-    </td>
-  </tr>
-)
+    </div>
+  )
+}
 
 export default FormField

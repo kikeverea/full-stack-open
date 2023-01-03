@@ -1,18 +1,21 @@
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useRef} from 'react'
 import BlogsTable from './components/BlogsTable'
 import LoggedUser from './components/LoggedUser'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
-import Notification from "./components/Notification";
+import Notification from "./components/Notification"
 
 import loginService from './services/login'
 import axios from 'axios'
+import Toggable from "./components/Toggable"
 
 const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
 
   const LOCAL_STORAGE_USER_KEY = 'loggedInUser'
+
+  const newBlogForm = useRef()
 
   useEffect(() => {
     const loggedInJSON = window.localStorage.getItem(LOCAL_STORAGE_USER_KEY)
@@ -36,10 +39,15 @@ const App = () => {
     const addedBlog = response.data
 
     if(addedBlog) {
+      newBlogForm.current.toggle()
       user.blogs = user.blogs.concat(addedBlog)
       saveUserInLocal(user)
       showNotification(`A new blog: '${ addedBlog.title }', was added`, 'success')
     }
+  }
+
+  const cancelNewBlog = () => {
+    newBlogForm.current.toggle()
   }
 
   const showNotification = (message, type) => {
@@ -68,9 +76,6 @@ const App = () => {
   }
 
   const handleLogin = async (user) => {
-    console.log('handle login')
-    console.log('user: ', user)
-
     if (user) {
       user.blogs = await fetchUserBlogs(user.id)
       saveUserInLocal(user)
@@ -78,7 +83,7 @@ const App = () => {
     }
     else {
       console.log('no user!')
-      showNotification('Login failed. Username or password incorrect', 'fail')
+      showNotification('Login failed. Wrong credentials', 'fail')
     }
   }
 
@@ -97,7 +102,9 @@ const App = () => {
         <h2>Blogs</h2>
         <Notification notification={ notification }/>
         <LoggedUser user={ user } logout={ logout } />
-        <NewBlogForm createNewBlog={ addNewBlog } />
+        <Toggable label={ 'new blog' } ref={ newBlogForm }>
+          <NewBlogForm createNewBlog={ addNewBlog } onCancel={ cancelNewBlog } />
+        </Toggable>
         { user.blogs ?
           <BlogsTable blogs={ user.blogs } /> :
           'No blogs listed'
