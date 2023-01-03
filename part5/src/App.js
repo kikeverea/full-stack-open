@@ -98,7 +98,7 @@ const App = () => {
   }
   else {
     return (
-      <div>
+      <div style={{ padding: 10 }}>
         <h2>Blogs</h2>
         <Notification notification={ notification }/>
         <LoggedUser user={ user } logout={ logout } />

@@ -3,6 +3,7 @@ import FormField from './FormField'
 import ErrorMessage from './ErrorMessage'
 import errorHelper from '../util/errorMessageHelper'
 import FormButtons from "./FormButtons";
+import Flex from "./Flex";
 
 const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 
@@ -31,33 +32,32 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
   }
 
   const validateInput = () => {
-    let error = ''
-    let errorCount = 0
-
-    if(!title) {
-      error = appendToError(error, 'Title')
-      errorCount++
+    const error = {
+      message: '',
+      count: 0
     }
 
-    if(!author) {
-      error = appendToError(error, 'Author')
-      errorCount++
-    }
+    if(!title)
+      addToError(error, 'Title')
 
-    if(!url) {
-      error = appendToError(error, 'Url')
-      errorCount++
-    }
+    if(!author)
+      addToError(error, 'Author')
 
-    if (errorCount > 1)
-      error = replaceLastComma(error)
+    if(!url)
+      addToError(error, 'Url')
 
-    if(error) {
-      errorHelper.displayErrorMessage(`${error} required`, setErrorMessage)
+    if(error.count > 1) {
+      error.message = replaceLastComma(error.message)
+      errorHelper.displayErrorMessage(`${error.message} required`, setErrorMessage)
       return false
     }
 
     return true
+  }
+
+  const addToError = (error, message) => {
+    error.message = error.count > 0 ? `${ error.message }, ${ message }` : message
+    error.count++
   }
 
   const replaceLastComma = (error) => {
@@ -65,29 +65,24 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
     return `${ error.substring(0, lastComma) } and ${ error.substring(lastComma + 1) }`
   }
 
-  const appendToError = (error, text) => {
-    return error.length === 0
-      ? text
-      : `${error}, ${text}`
-  }
-
-  const formStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 10
-  }
-
   return (
     <div>
       <h2>Create new Blog</h2>
-      <form onSubmit={ submitBlog } style={ formStyle }>
-        <FormField name='Title' value={title} inputChange={setTitle} />
-        <FormField name='Author' value={author} inputChange={setAuthor} />
-        <FormField name='Url' value={url} inputChange={setUrl} />
-        <FormButtons>
-          <input type="submit" value='Submit' />
-          <button onClick={ onCancel }>Cancel</button>
-        </FormButtons>
+      <form onSubmit={ submitBlog }>
+        <Flex direction={ 'column' }
+              customStyle={{
+                gap: 8,
+                width: 250
+              }}
+        >
+          <FormField name='Title' value={title} inputChange={setTitle} />
+          <FormField name='Author' value={author} inputChange={setAuthor} />
+          <FormField name='Url' value={url} inputChange={setUrl} />
+          <FormButtons>
+            <input type="submit" value='Submit' />
+            <button onClick={ onCancel }>Cancel</button>
+          </FormButtons>
+        </Flex>
       </form>
       <ErrorMessage errorMessage={ errorMessage } />
       <br />
