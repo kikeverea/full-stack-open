@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import FormField from './FormField'
-import FormSubmit from './FormSubmit'
-import ErrorMessage from './ErrorMessage'
-import errorHelper from '../util/errorMessageHelper'
+import Flex from "./Flex";
 
 const LoginForm = ({ loginService, userLoggedIn }) => {
 
@@ -18,20 +16,23 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
       setPassword('')
     }
     catch (exception) {
+      console.log(exception)
       await userLoggedIn(null)
     }
   }
 
   return (
     <form onSubmit={ handleLogin }>
-      <table>
-        <tbody>
-          <FormField name='User' value={username} inputChange={setUsername} />
-          <FormField name='Password' value={password} inputChange={setPassword} />
-          <FormSubmit value='Login' />
-        </tbody>
-      </table>
-      <br />
+      <Flex customStyle={{
+        flexDirection: 'column',
+        gap: 10,
+        maxWidth: 260,
+        alignContent: 'flex-start'
+      }}>
+        <FormField name='User' value={username} inputChange={setUsername} />
+        <FormField name='Password' value={password} inputChange={setPassword} />
+        <input type='submit' value='login'/>
+      </Flex>
     </form>
   )
 }
