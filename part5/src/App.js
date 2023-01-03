@@ -9,11 +9,11 @@ import loginService from './services/login'
 import axios from 'axios'
 import Toggable from "./components/Toggable"
 
+import LOCAL_STORAGE_USER_KEY from "./services/users";
+
 const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
-
-  const LOCAL_STORAGE_USER_KEY = 'loggedInUser'
 
   const newBlogForm = useRef()
 
@@ -51,7 +51,6 @@ const App = () => {
   }
 
   const showNotification = (message, type) => {
-    console.log('showing notification: ', message)
     setNotification({
       message: message,
       type: type
@@ -67,14 +66,6 @@ const App = () => {
     window.localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(user))
   }
 
-   const fetchUserBlogs = async (id) => {
-    const response = await axios.get('/api/users')
-    const users = response.data
-    const loggedUser = users.filter(user => user.id === id)[0]
-
-    return loggedUser.blogs
-  }
-
   const handleLogin = async (user) => {
     if (user) {
       user.blogs = await fetchUserBlogs(user.id)
@@ -85,6 +76,14 @@ const App = () => {
       console.log('no user!')
       showNotification('Login failed. Wrong credentials', 'fail')
     }
+  }
+
+  const fetchUserBlogs = async (id) => {
+    const response = await axios.get('/api/users')
+    const users = response.data
+    const loggedInUser = users.filter(user => user.id === id)[0]
+
+    return loggedInUser.blogs
   }
 
   if (user === null) {
@@ -99,7 +98,7 @@ const App = () => {
   else {
     return (
       <div style={{ padding: 10 }}>
-        <h2>Blogs</h2>
+        <h1>Blogs</h1>
         <Notification notification={ notification }/>
         <LoggedUser user={ user } logout={ logout } />
         <Toggable label={ 'new blog' } ref={ newBlogForm }>

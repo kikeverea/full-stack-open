@@ -1,8 +1,12 @@
 import Flex from "./Flex";
 import {useState} from "react";
 import ValueToggleButton from "./ValueToggleButton";
+import blogsService from '../services/blogs'
 
 const Blog = ({ blog }) => {
+
+  const [ likes, setLikes ] = useState(blog.likes ? blog.likes : 0)
+  const [ showFullContent, setShowFullContent ] = useState(false)
 
   const simpleContent = () =>
     <div>{ blog.title }</div>
@@ -18,13 +22,19 @@ const Blog = ({ blog }) => {
           flexDirection: 'row',
           gap: 10
         }}>
-          { blog.likes ? blog.likes : 0 }
-          <button>like</button>
+          { likes }
+          <button onClick={ () => likeBlog(blog) }>like</button>
         </Flex>
         <div>{ blog.author }</div>
       </Flex>
 
-  const [ showFullContent, setShowFullContent ] = useState(false)
+  const likeBlog = async (blog) => {
+    const newLikes = likes + 1
+    setLikes(newLikes)
+    blog.likes = newLikes
+
+    await blogsService.updateBlog(blog)
+  }
 
   const toggleContent = () =>
     setShowFullContent(!showFullContent)

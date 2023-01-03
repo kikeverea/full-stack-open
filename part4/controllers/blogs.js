@@ -38,11 +38,10 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
 })
 
 blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
-  const { title, author, url, likes = 0 } = request.body
-  const id = request.params.id
+  const { title, author, url, likes = 0, user = request.user.id } = request.body
 
+  const id = request.params.id
   const blog = await Blog.findById(id)
-  const user = request.user
 
   if (userIsNotCreatorOfBlog(user, blog))
     return unauthorizedUserResponse(response)
@@ -55,7 +54,7 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
 
   // atomic
   const updated = await Blog.findByIdAndUpdate(id,
-    { title, author, url, likes },
+    { title, author, url, likes, user },
     { new: true, runValidators: true, context: 'query' })
 
   response.status(200).json(updated)
@@ -67,7 +66,7 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
   const blog = await Blog.findById(id)
   const user = request.user
 
-  if (userIsNotCreatorOfBlog(user, blog))
+  if (userIsNotCreatorOfBlog(user.id, blog))
     return unauthorizedUserResponse(response)
 
   blog.remove()
@@ -75,8 +74,8 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
   response.status(204).end()
 })
 
-const userIsNotCreatorOfBlog = (user, blog) => {
-  if (blog.user.toString() !== user.id)
+const userIsNotCreatorOfBlog = (userId, blog) => {
+  if (blog.user.toString() !== userId)
     return true
 }
 
