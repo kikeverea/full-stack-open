@@ -103,7 +103,7 @@ const App = () => {
         <Notification notification={ notification }/>
         <LoggedUser user={ user } logout={ logout } />
         <Toggable label={ 'new blog' } ref={ newBlogForm }>
-          <NewBlogForm createNewBlog={ addNewBlog } onCancel={ cancelNewBlog } />
+          <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
         </Toggable>
         { user.blogs ?
           <BlogsTable blogs={ user.blogs } /> :
