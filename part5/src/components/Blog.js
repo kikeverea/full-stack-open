@@ -1,9 +1,9 @@
 import Flex from "./Flex";
 import {useState} from "react";
 import ValueToggleButton from "./ValueToggleButton";
-import blogsService from '../services/blogs'
+import HoverButton from "./HoverButton";
 
-const Blog = ({ blog, onBlogChange }) => {
+const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
 
   const [ likes, setLikes ] = useState(blog.likes ? blog.likes : 0)
   const [ showFullContent, setShowFullContent ] = useState(false)
@@ -12,29 +12,22 @@ const Blog = ({ blog, onBlogChange }) => {
     <div>{ blog.title }</div>
 
   const fullContent = () =>
-      <Flex customStyle={{
-        flexDirection: 'column',
-        gap: 10
-      }}>
-        <div>{ blog.title }</div>
-        <div>{ blog.url }</div>
-        <Flex customStyle={{
-          flexDirection: 'row',
-          gap: 10
-        }}>
-          { likes }
-          <button onClick={ () => likeBlog(blog) }>like</button>
-        </Flex>
-        <div>{ blog.author }</div>
+    <Flex direction={ 'column' } customStyle={{ gap: 10 }}>
+      <div>{ blog.title }</div>
+      <div>{ blog.url }</div>
+      <Flex direction={ 'row' } customStyle={{ gap: 10 }}>
+        { likes }
+        <button onClick={ () => likeBlog(blog) }>like</button>
       </Flex>
+      <div>{ blog.author }</div>
+      <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => onDeleteRequest(blog) }/>
+    </Flex>
 
-  const likeBlog = async (blog) => {
+  const likeBlog = (blog) => {
     const newLikes = likes + 1
     setLikes(newLikes)
     blog.likes = newLikes
-    onBlogChange(blog)
-
-    await blogsService.updateBlog(blog)
+    onUpdateRequest(blog)
   }
 
   const toggleContent = () =>

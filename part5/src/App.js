@@ -1,53 +1,44 @@
-import {useEffect, useState, useRef} from 'react'
-import BlogsTable from './components/BlogsTable'
+import {useEffect, useState} from 'react'
+import UserBlogs from './components/UserBlogs'
 import LoggedUser from './components/LoggedUser'
 import LoginForm from './components/LoginForm'
-import NewBlogForm from './components/NewBlogForm'
 import Notification from "./components/Notification"
 
 import loginService from './services/login'
-import axios from 'axios'
-import Toggable from "./components/Toggable"
-
-import LOCAL_STORAGE_USER_KEY from "./services/users";
+import usersService from "./services/users";
+import blogsService from "./services/blogs";
 
 const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState(null)
 
-  const newBlogForm = useRef()
-
   useEffect(() => {
-    const loggedInJSON = window.localStorage.getItem(LOCAL_STORAGE_USER_KEY)
-    if (loggedInJSON) {
-      const user = JSON.parse(loggedInJSON)
+    const user = usersService.getUserFromLocal()
+    if (user) {
       setUser(user)
     }
   }, [])
 
+  const loggedIn = async (user) => {
+    if (user) {
+      user.blogs = await blogsService.fetchUserBlogs(user.id)
+      saveUserInLocal(user)
+      showNotification('Logged in', 'success')
+    }
+    else {
+      console.log('no user!')
+      showNotification('Login failed. Wrong credentials', 'fail')
+    }
+  }
+
   const logout = () => {
-    window.localStorage.setItem(LOCAL_STORAGE_USER_KEY, null)
+    usersService.removeUserFromLocal()
     setUser(null)
   }
 
-  const addNewBlog = async (blog) => {
-    const config = {
-      headers: { Authorization: `bearer ${ user.token }` },
-    }
-
-    const response = await axios.post('/api/blogs', blog, config)
-    const addedBlog = response.data
-
-    if(addedBlog) {
-      newBlogForm.current.toggle()
-      user.blogs = user.blogs.concat(addedBlog)
-      saveUserInLocal(user)
-      showNotification(`A new blog: '${ addedBlog.title }', was added`, 'success')
-    }
-  }
-
-  const cancelNewBlog = () => {
-    newBlogForm.current.toggle()
+  const saveUserInLocal = (user) => {
+    usersService.saveUserInLocal(user)
+    setUser({...user})
   }
 
   const showNotification = (message, type) => {
@@ -61,29 +52,11 @@ const App = () => {
     }, 3000)
   }
 
-  const saveUserInLocal = (user) => {
-    setUser({...user})
-    window.localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(user))
-  }
+  const handleBlogsListChange = (change) => {
+    if (change.action === 'add')
+      showNotification(`A new blog: '${ change.blog.title }', was added`, 'success')
 
-  const handleLogin = async (user) => {
-    if (user) {
-      user.blogs = await fetchUserBlogs(user.id)
-      saveUserInLocal(user)
-      showNotification('Logged in', 'success')
-    }
-    else {
-      console.log('no user!')
-      showNotification('Login failed. Wrong credentials', 'fail')
-    }
-  }
-
-  const fetchUserBlogs = async (id) => {
-    const response = await axios.get('/api/users')
-    const users = response.data
-    const loggedInUser = users.filter(user => user.id === id)[0]
-
-    return loggedInUser.blogs
+    usersService.saveUserInLocal(user)
   }
 
   if (user === null) {
@@ -91,7 +64,7 @@ const App = () => {
       <div>
         <h2>Log in</h2>
         <Notification notification={ notification }/>
-        <LoginForm loginService={ loginService } userLoggedIn={ handleLogin }/>
+        <LoginForm loginService={ loginService } userLoggedIn={ loggedIn }/>
       </div>
     )
   }
@@ -101,13 +74,7 @@ const App = () => {
         <h1>Blogs</h1>
         <Notification notification={ notification }/>
         <LoggedUser user={ user } logout={ logout } />
-        <Toggable label={ 'new blog' } ref={ newBlogForm }>
-          <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
-        </Toggable>
-        { user.blogs ?
-          <BlogsTable blogs={ user.blogs } /> :
-          'No blogs listed'
-        }
+        <UserBlogs user={ user } onBlogsChange={ handleBlogsListChange }/>
       </div>
     )
   }

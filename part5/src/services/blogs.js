@@ -1,27 +1,49 @@
 import axios from 'axios'
-import LOCAL_STORAGE_USER_KEY from "./users";
 
 const baseUrl = '/api/blogs'
 
-const getAll = async () => {
-  const response = await axios.get(baseUrl)
-  return response.data
+const fetchUserBlogs = async (id) => {
+  const response = await axios.get('/api/users')
+  const users = response.data
+  const loggedInUser = users.filter(user => user.id === id)[0]
+
+  console.log('blogs: ', loggedInUser.blogs)
+
+  return loggedInUser.blogs
 }
 
-const updateBlog = async (blog) => {
-  const userJSON = window.localStorage.getItem(LOCAL_STORAGE_USER_KEY)
-  const user = JSON.parse(userJSON)
-
+const addBlog = async (blog, user) => {
   const config = {
     headers: { Authorization: `bearer ${ user.token }` },
   }
 
+  const response = await axios.post('/api/blogs', blog, config)
+  return response.data
+}
+
+const updateBlog = async (blog, user) => {
   blog = {
     ...blog,
     user: user.id
   }
 
-  await axios.put(`${ baseUrl }/${ blog.id }`, blog, config)
+  const response = await axios.put(`${ baseUrl }/${ blog.id }`, blog, config(user))
+
+  return response.status === 200
 }
 
-export default { getAll, updateBlog }
+const deleteBlog = async (blog, user) => {
+  const response = await axios.delete(`${ baseUrl }/${ blog.id }`, config(user))
+  return response.status === 204
+}
+
+const config = (user) => {
+  return (
+    {
+      headers: { Authorization: `bearer ${ user.token }` },
+    }
+  )
+}
+
+
+export default { fetchUserBlogs, addBlog, updateBlog, deleteBlog }
