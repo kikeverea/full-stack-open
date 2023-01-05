@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import FormField from './FormField'
 import ErrorMessage from './ErrorMessage'
-import errorHelper from '../util/errorMessageHelper'
 import FormButtons from "./FormButtons";
 import Flex from "./Flex";
 
@@ -48,11 +47,18 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 
     if(error.count > 1) {
       error.message = replaceLastComma(error.message)
-      errorHelper.displayErrorMessage(`${error.message} required`, setErrorMessage)
+      displayErrorMessage(`${ error.message } required`)
       return false
     }
 
     return true
+  }
+
+  const displayErrorMessage = (error) => {
+    setErrorMessage(error)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
   }
 
   const addToError = (error, message) => {
