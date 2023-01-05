@@ -1,8 +1,7 @@
 const LoggedUser = ({ user, logout }) => {
-  
   const container = {
-    display: 'flex', 
-    alignItems: 'center', 
+    display: 'flex',
+    alignItems: 'center',
     gap: '10px'
   }
 

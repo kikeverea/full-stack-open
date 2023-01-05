@@ -1,6 +1,6 @@
-import {useState} from "react";
+import { useState } from 'react'
 
-const HoverButton = ({ label, color, handleOnClick}) => {
+const HoverButton = ({ label, color, handleOnClick }) => {
 
   const buttonStyle = {
     borderRadius: 6,
@@ -36,9 +36,9 @@ const HoverButton = ({ label, color, handleOnClick}) => {
 
   return (
     <div style={ style }
-         onMouseOver={ handleOnMouseOver }
-         onMouseOut={ handleOnMouseOut }
-         onClick={ handleOnClick }>
+      onMouseOver={ handleOnMouseOver }
+      onMouseOut={ handleOnMouseOut }
+      onClick={ handleOnClick }>
       { label }
     </div>
   )

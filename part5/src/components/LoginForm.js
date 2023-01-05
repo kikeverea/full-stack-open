@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import FormField from './FormField'
-import Flex from "./Flex";
-import PropTypes from "prop-types";
+import Flex from './Flex'
+import PropTypes from 'prop-types'
 
 const LoginForm = ({ loginService, userLoggedIn }) => {
 

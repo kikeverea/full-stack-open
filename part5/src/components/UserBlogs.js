@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react';
+import { useRef, useState } from 'react'
 
-import Flex from './Flex';
-import Blog from './Blog';
-import Toggable from "./Toggable";
-import NewBlogForm from "./NewBlogForm";
+import Flex from './Flex'
+import Blog from './Blog'
+import Toggable from './Toggable'
+import NewBlogForm from './NewBlogForm'
 
-import blogsService from '../services/blogs';
+import blogsService from '../services/blogs'
 
 const UserBlogs = ({ user, onBlogsChange }) => {
 
@@ -42,7 +42,7 @@ const UserBlogs = ({ user, onBlogsChange }) => {
   }
 
   const replaceBlogInBlogs = (blog) => {
-    const blogIndex = blogs.findIndex(x => x.id === blog.id);
+    const blogIndex = blogs.findIndex(x => x.id === blog.id)
     blogs[blogIndex] = blog
     return [...blogs]
   }
@@ -88,9 +88,9 @@ const UserBlogs = ({ user, onBlogsChange }) => {
           {
             sortByLikes(blogs).map(blog =>
               <Blog key={ blog.id }
-                    blog={ blog }
-                    onUpdateRequest={ updateBlog }
-                    onDeleteRequest={ tryDelete }/>
+                blog={ blog }
+                onUpdateRequest={ updateBlog }
+                onDeleteRequest={ tryDelete }/>
             )}
         </>
         : 'No blogs listed' }

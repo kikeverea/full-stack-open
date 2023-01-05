@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import FormField from './FormField'
 import ErrorMessage from './ErrorMessage'
-import FormButtons from "./FormButtons";
-import Flex from "./Flex";
+import FormButtons from './FormButtons'
+import Flex from './Flex'
 
 const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 
@@ -76,16 +76,16 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
       <h2>Create new Blog</h2>
       <form onSubmit={ submitBlog }>
         <Flex direction={ 'column' }
-              customStyle={{
-                gap: 8,
-                width: 250
-              }}
+          customStyle={{
+            gap: 8,
+            width: 250
+          }}
         >
           <FormField name='Title' value={title} inputChange={setTitle} />
           <FormField name='Author' value={author} inputChange={setAuthor} />
           <FormField name='Url' value={url} inputChange={setUrl} />
           <FormButtons>
-            <input type="submit" value='Submit' />
+            <input type='submit' value='Submit' />
             <button onClick={ onCancel }>Cancel</button>
           </FormButtons>
         </Flex>

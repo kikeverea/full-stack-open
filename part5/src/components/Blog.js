@@ -1,7 +1,7 @@
-import Flex from "./Flex";
-import {useState} from "react";
-import ValueToggleButton from "./ValueToggleButton";
-import HoverButton from "./HoverButton";
+import Flex from './Flex'
+import { useState } from 'react'
+import ValueToggleButton from './ValueToggleButton'
+import HoverButton from './HoverButton'
 
 const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
 

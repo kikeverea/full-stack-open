@@ -1,12 +1,12 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import UserBlogs from './components/UserBlogs'
 import LoggedUser from './components/LoggedUser'
 import LoginForm from './components/LoginForm'
-import Notification from "./components/Notification"
+import Notification from './components/Notification'
 
 import loginService from './services/login'
-import usersService from "./services/users";
-import blogsService from "./services/blogs";
+import usersService from './services/users'
+import blogsService from './services/blogs'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -38,7 +38,7 @@ const App = () => {
 
   const saveUserInLocal = (user) => {
     usersService.saveUserInLocal(user)
-    setUser({...user})
+    setUser({ ...user })
   }
 
   const showNotification = (message, type) => {

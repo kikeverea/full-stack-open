@@ -11,4 +11,4 @@ const saveUserInLocal = (user) =>
 const removeUserFromLocal = () =>
   window.localStorage.removeItem(LOCAL_STORAGE_USER_KEY)
 
-export default { getUserFromLocal, saveUserInLocal, removeUserFromLocal}
+export default { getUserFromLocal, saveUserInLocal, removeUserFromLocal }
