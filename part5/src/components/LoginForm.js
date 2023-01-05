@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import FormField from './FormField'
 import Flex from "./Flex";
+import PropTypes from "prop-types";
 
 const LoginForm = ({ loginService, userLoggedIn }) => {
 
@@ -35,6 +36,11 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
       </Flex>
     </form>
   )
+}
+
+LoginForm.propTypes = {
+  loginService: PropTypes.object.isRequired,
+  userLoggedIn: PropTypes.func.isRequired
 }
 
 export default LoginForm

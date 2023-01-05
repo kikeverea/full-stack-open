@@ -1,6 +1,7 @@
 import {forwardRef, useImperativeHandle, useState} from "react";
+import PropTypes from "prop-types";
 
-const Toggable = forwardRef((props, refs) => {
+const Toggable = forwardRef((props, ref) => {
 
   const [active, setActive] = useState(false)
 
@@ -15,7 +16,7 @@ const Toggable = forwardRef((props, refs) => {
   const toggle = () =>
     setActive(!active)
 
-  useImperativeHandle(refs, () => {
+  useImperativeHandle(ref, () => {
     return {
       toggle
     }
@@ -32,5 +33,10 @@ const Toggable = forwardRef((props, refs) => {
     </div>
   )
 })
+
+Toggable.propTypes = {
+  label: PropTypes.string.isRequired
+}
+
 
 export default Toggable
