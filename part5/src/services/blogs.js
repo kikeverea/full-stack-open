@@ -7,8 +7,6 @@ const fetchUserBlogs = async (id) => {
   const users = response.data
   const loggedInUser = users.filter(user => user.id === id)[0]
 
-  console.log('blogs: ', loggedInUser.blogs)
-
   return loggedInUser.blogs
 }
 
