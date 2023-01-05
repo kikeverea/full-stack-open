@@ -59,25 +59,21 @@ const App = () => {
     usersService.saveUserInLocal(user)
   }
 
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in</h2>
-        <Notification notification={ notification }/>
+  return (
+    <div style={{ padding: 10 }}>
+      <h1>{ user !== null ? 'Blogs' : 'Log in'}</h1>
+      <Notification notification={ notification }/>
+      { user !== null
+        ?
+        <>
+          <LoggedUser user={ user } logout={ logout } />
+          <UserBlogs user={ user } onBlogsChange={ handleBlogsListChange }/>
+        </>
+        :
         <LoginForm loginService={ loginService } userLoggedIn={ loggedIn }/>
-      </div>
-    )
-  }
-  else {
-    return (
-      <div style={{ padding: 10 }}>
-        <h1>Blogs</h1>
-        <Notification notification={ notification }/>
-        <LoggedUser user={ user } logout={ logout } />
-        <UserBlogs user={ user } onBlogsChange={ handleBlogsListChange }/>
-      </div>
-    )
-  }
+      }
+    </div>
+  )
 }
 
 export default App
