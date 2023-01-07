@@ -19,20 +19,10 @@ describe('Blog test', () => {
   })
 
   test('show simple content by default', () => {
-    const title = container.querySelector('#title')
-    const url = container.querySelector('#url')
-    const likes = container.querySelector('#likes')
-    const author = container.querySelector('#author')
-    const showButton = screen.getByText('view')
-
-    expect(title).toBeDefined()
-    expect(url).toBe(null)
-    expect(likes).toBe(null)
-    expect(author).toBe(null)
-    expect(showButton).toBeDefined()
+    assertSimpleContentOnDisplay()
   })
 
-  test('show full content when show button is clicked', async () => {
+  test('show full content when view button is clicked', async () => {
     const user = userEvent.setup()
     const showButton = screen.getByText('view')
 
@@ -50,4 +40,28 @@ describe('Blog test', () => {
     expect(author).toBeDefined()
     expect(hideButton).toBeDefined()
   })
+
+  test('show simple content when hide button is clicked', async () => {
+    const user = userEvent.setup()
+    const showButton = screen.getByText('view')
+
+    await user.click(showButton)
+    await user.click(showButton)
+
+    assertSimpleContentOnDisplay()
+  })
+
+  const assertSimpleContentOnDisplay = () => {
+    const title = container.querySelector('#title')
+    const url = container.querySelector('#url')
+    const likes = container.querySelector('#likes')
+    const author = container.querySelector('#author')
+    const showButton = screen.getByText('view')
+
+    expect(title).toBeDefined()
+    expect(url).toBe(null)
+    expect(likes).toBe(null)
+    expect(author).toBe(null)
+    expect(showButton).toBeDefined()
+  }
 })
