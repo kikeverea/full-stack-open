@@ -81,9 +81,9 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
             width: 250
           }}
         >
-          <FormField name='Title' value={title} inputChange={setTitle} />
-          <FormField name='Author' value={author} inputChange={setAuthor} />
-          <FormField name='Url' value={url} inputChange={setUrl} />
+          <FormField name='Title' value={ title } inputChange={ setTitle } />
+          <FormField name='Author' value={ author } inputChange={ setAuthor } />
+          <FormField name='Url' value={ url } inputChange={ setUrl } />
           <FormButtons>
             <input type='submit' value='Submit' />
             <button onClick={ onCancel }>Cancel</button>

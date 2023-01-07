@@ -6,7 +6,7 @@ const FormField = ({ name, value, inputChange }) => {
     <Flex direction={ 'row' } customStyle={{ gap: 20, justifyContent: 'space-between' }}>
       <label htmlFor={name}>{name}</label>
       <input
-        id={name}
+        id={ name }
         type="text"
         value={value}
         onChange={({ target }) => inputChange(target.value)}
