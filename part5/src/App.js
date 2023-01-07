@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import UserBlogs from './components/UserBlogs'
+import UserBlogs from './components/blogs/UserBlogs'
 import LoggedUser from './components/LoggedUser'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'

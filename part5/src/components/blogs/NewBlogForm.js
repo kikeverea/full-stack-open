@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import FormField from './FormField'
-import ErrorMessage from './ErrorMessage'
-import FormButtons from './FormButtons'
-import Flex from './Flex'
+import FormField from '../FormField'
+import ErrorMessage from '../ErrorMessage'
+import FormButtons from '../FormButtons'
+import Flex from '../Flex'
 
 const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 

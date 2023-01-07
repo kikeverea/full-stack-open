@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react'
 
-import Flex from './Flex'
+import Flex from '../Flex'
 import Blog from './Blog'
-import Toggable from './Toggable'
+import Toggable from '../Toggable'
 import NewBlogForm from './NewBlogForm'
 
-import blogsService from '../services/blogs'
+import blogsService from '../../services/blogs'
 
 const UserBlogs = ({ user, onBlogsChange }) => {
 

@@ -1,7 +1,7 @@
-import Flex from './Flex'
+import Flex from '../Flex'
 import { useState } from 'react'
-import ValueToggleButton from './ValueToggleButton'
-import HoverButton from './HoverButton'
+import ValueToggleButton from '../ValueToggleButton'
+import HoverButton from '../HoverButton'
 
 const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
 
@@ -9,17 +9,17 @@ const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
   const [ showFullContent, setShowFullContent ] = useState(false)
 
   const simpleContent = () =>
-    <div>{ blog.title }</div>
+    <div id='title'>{ blog.title }</div>
 
   const fullContent = () =>
     <Flex direction={ 'column' } customStyle={{ gap: 10 }}>
-      <div>{ blog.title }</div>
-      <div>{ blog.url }</div>
-      <Flex direction={ 'row' } customStyle={{ gap: 10 }}>
+      <div id='title'>{ blog.title }</div>
+      <div id='url'>{ blog.url }</div>
+      <Flex id='likes' direction={ 'row' } customStyle={{ gap: 10 }}>
         { likes }
         <button onClick={ () => likeBlog(blog) }>like</button>
       </Flex>
-      <div>{ blog.author }</div>
+      <div id='author'>{ blog.author }</div>
       <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => onDeleteRequest(blog) }/>
     </Flex>
 
