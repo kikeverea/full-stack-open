@@ -15,8 +15,8 @@ const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
     <Flex direction={ 'column' } customStyle={{ gap: 10 }}>
       <div id='title'>{ blog.title }</div>
       <div id='url'>{ blog.url }</div>
-      <Flex id='likes' direction={ 'row' } customStyle={{ gap: 10 }}>
-        { likes }
+      <Flex direction={ 'row' } customStyle={{ gap: 10 }}>
+        <div id='likes'>{ likes }</div>
         <button onClick={ () => likeBlog(blog) }>like</button>
       </Flex>
       <div id='author'>{ blog.author }</div>
