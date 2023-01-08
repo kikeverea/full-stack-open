@@ -11,6 +11,10 @@
   "jest": {
     "testEnvironment": "node"
   },
+  "engines": {
+    "node": "16.16.0",
+    "npm": "8.5.1"
+  },
   "author": "Enrique Verea",
   "license": "ISC",
   "devDependencies": {
