@@ -26,7 +26,6 @@ const App = () => {
       showNotification('Logged in', 'success')
     }
     else {
-      console.log('no user!')
       showNotification('Login failed. Wrong credentials', 'fail')
     }
   }

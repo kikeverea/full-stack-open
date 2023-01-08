@@ -30,9 +30,9 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
         maxWidth: 260,
         alignContent: 'flex-start'
       }}>
-        <FormField name='User' value={username} inputChange={setUsername} />
-        <FormField name='Password' value={password} inputChange={setPassword} />
-        <input type='submit' value='login'/>
+        <FormField name='User' value={ username } inputChange={ setUsername } />
+        <FormField name='Password' value={ password } inputChange={ setPassword } />
+        <input id='submitButton' type='submit' value='login'/>
       </Flex>
     </form>
   )
