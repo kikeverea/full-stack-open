@@ -1,7 +1,7 @@
 const Notification = ({ notification }) => {
 
   if (notification === null) {
-    return null
+    return <div id='notification'></div>
   }
 
   const typeColor = notification.type === 'success' ? 'green' : 'red'
@@ -19,7 +19,7 @@ const Notification = ({ notification }) => {
   }
 
   return (
-    <div style={ notificationStyle }>
+    <div id='notification' style={ notificationStyle }>
       { notification.message }
     </div>
   )
