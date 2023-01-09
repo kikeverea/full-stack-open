@@ -23,7 +23,7 @@ const Toggable = forwardRef((props, ref) => {
   })
 
   return (
-    <div style={{ padding: '20px 0 20px 0' }}>
+    <div className='toggable' style={{ padding: '20px 0 20px 0' }}>
       <div style={ hideWhenActive }>
         <button onClick={ toggle }>{ props.label }</button>
       </div>

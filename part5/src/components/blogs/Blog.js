@@ -34,7 +34,7 @@ const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
     setShowFullContent(!showFullContent)
 
   return (
-    <Flex direction={ 'row' } customStyle={{
+    <Flex direction={ 'row' } className='blog' customStyle={{
       justifyContent: 'space-between',
       alignItems: 'center',
       border: '1px solid black',

@@ -25,37 +25,41 @@ describe('Blogs', function () {
       )
   })
 
-    it('succeed with correct credentials', function () {
-      submitLogin('kike', 'asd', 200)
+  it('New blog form shown when clicking "new blog" button', function () {
+    cy.get('.toggable>div>button').click()
+    cy.contains('Create new Blog')
+    cy.contains('Title')
+    cy.contains('Author')
+    cy.contains('Url')
+    cy.contains('Submit')
+  })
 
-      cy.get('#notification')
-        .should('contain', 'Logged in')
-        .and('have.css', 'color')
-        .and('eq', 'rgb(0, 128, 0)')
+  it('A blog can be created', function () {
+    const title = 'A new blog'
 
-      cy.contains('kike')
-    })
+    // open form
+    cy.get('.toggable>div>button').click()
 
-    it('fails with wrong credentials', function () {
-      submitLogin('incorrect_user', 'incorrect_password', 401)
+    // write to form
+    cy.get('#Title').type(title)
+    cy.get('#Author').type('Me')
+    cy.get('#Url').type('www.mine.com')
 
-      cy.get('#notification')
-        .should('contain', 'Login failed. Wrong credentials')
-        .and('have.css', 'color')
-        .and('eq', 'rgb(255, 0, 0)')
+    // submit form
+    cy.intercept('POST', `${ apiUrl }/blogs`).as('newBlogRequest')
+    cy.get('#new-blog-submit').click()
+    cy.wait('@newBlogRequest').its('response.statusCode').should('eq', 201)
 
-      //screen unchanged
-      cy.contains('User')
-      cy.contains('Password')
-    })
+    // check for notification
+    cy.get('#notification')
+      .should('contain', `A new blog: '${ title }', was added`)
+      .and('have.css', 'color')
+      .and('eq', 'rgb(0, 128, 0)')
 
-    const submitLogin = (username, password, expectedStatus) => {
-      cy.get('#User').type(username)
-      cy.get('#Password').type(password)
+    // check new blog has been added to blog list
+    cy.get('.blog').should('contain', title)
 
-      cy.intercept('POST', 'http://localhost:3000/api/login').as('loginRequest')
-      cy.get('#submitButton').click()
-      cy.wait('@loginRequest').its('response.statusCode').should('eq', expectedStatus)
-    }
+    // form collapsed
+    cy.contains('new blog')
   })
 })

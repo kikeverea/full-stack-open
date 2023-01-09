@@ -86,7 +86,7 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
           <FormField name='Url' value={ url } inputChange={ setUrl } />
           <FormButtons>
             <input type='submit' value='Submit' />
-            <button onClick={ onCancel }>Cancel</button>
+            <button id='new-blog-submit' onClick={ onCancel }>Cancel</button>
           </FormButtons>
         </Flex>
       </form>
