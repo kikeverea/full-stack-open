@@ -1,23 +1,29 @@
-describe('Blog app', function () {
+describe('Blogs', function () {
+  const apiUrl = 'http://localhost:3000/api'
 
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3000/api/testing/reset')
+    const RESET = `${ apiUrl }/testing/reset`
+    const USERS = `${ apiUrl }/users`
+    const LOGIN = `${ apiUrl }/login`
+    const newUser = {
+      name: 'kike',
+      username: 'kike',
+      password: 'asd' }
+
+    localStorage.removeItem('loggedInUser')
+
+    cy.request('POST', RESET)
       .then(() =>
-        cy.request('POST', 'http://localhost:3000/api/users', {
-          name: 'kike',
-          username: 'kike',
-          password: 'asd' }))
-
-    cy.visit('http://localhost:3000')
+        cy.request('POST', USERS, newUser)
+          .then(() => {
+            cy.request('POST', LOGIN, { username: 'kike', password: 'asd' })
+              .then((res) => {
+                localStorage.setItem('loggedInUser', JSON.stringify(res.body))
+                cy.visit('http://localhost:3000')
+              })
+          })
+      )
   })
-
-  describe('Login test', function () {
-
-    it('Login form shown by default', function () {
-      cy.contains('User')
-      cy.contains('Password')
-      cy.contains('login')
-    })
 
     it('succeed with correct credentials', function () {
       submitLogin('kike', 'asd', 200)
