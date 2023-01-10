@@ -1,4 +1,4 @@
-const Flex = ({ direction, customStyle, className, children }) => {
+const Flex = ({ id, direction, customStyle, className, children }) => {
   let style = {
     display: 'flex',
     flexDirection: direction,
@@ -12,7 +12,7 @@ const Flex = ({ direction, customStyle, className, children }) => {
   }
 
   return (
-    <div style={ style } className={ className ? className : '' }>
+    <div id={id ? id : ''} style={ style } className={ className ? className : '' }>
       { children }
     </div>
   )

@@ -12,7 +12,7 @@ const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
     <div id='title'>{ blog.title }</div>
 
   const fullContent = () =>
-    <Flex direction={ 'column' } customStyle={{ gap: 10 }}>
+    <Flex id='blog-full' direction={ 'column' } customStyle={{ gap: 10 }}>
       <div id='title'>{ blog.title }</div>
       <div id='url'>{ blog.url }</div>
       <Flex direction={ 'row' } customStyle={{ gap: 10 }}>

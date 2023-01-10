@@ -18,9 +18,7 @@ const UserBlogs = ({ user, onBlogsChange }) => {
 
     if(addedBlog && Object.keys(addedBlog)) {
       newBlogForm.current.toggle()
-      refreshBlogs(blogs
-        ? blogs.concat(addedBlog)
-        : [addedBlog],{
+      refreshBlogs(blogs ? blogs.concat(addedBlog) : [addedBlog],{
         action: 'add',
         blog: addedBlog
       })
@@ -82,7 +80,7 @@ const UserBlogs = ({ user, onBlogsChange }) => {
 
   return (
     <Flex customStyle={{ flexDirection: 'column', gap: 5, maxWidth: 480 }}>
-      <Toggable label={ 'new blog' } ref={ newBlogForm }>
+      <Toggable id='new-blog-form' label={ 'new blog' } ref={ newBlogForm }>
         <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
       </Toggable>
       { blogs ?
