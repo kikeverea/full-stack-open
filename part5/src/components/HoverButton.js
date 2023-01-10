@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const HoverButton = ({ label, color, handleOnClick }) => {
+const HoverButton = ({ id, label, color, handleOnClick }) => {
 
   const buttonStyle = {
     borderRadius: 6,
@@ -35,7 +35,9 @@ const HoverButton = ({ label, color, handleOnClick }) => {
   }
 
   return (
-    <div style={ style }
+    <div id={ id ? id : '' }
+      style={ style }
+      className='hover-button'
       onMouseOver={ handleOnMouseOver }
       onMouseOut={ handleOnMouseOut }
       onClick={ handleOnClick }>

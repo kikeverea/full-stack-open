@@ -20,26 +20,17 @@ describe('Login test', function () {
   })
 
   it('succeed with correct credentials', function () {
-    submitLogin('kike', 'asd', 200)
-
+    helper.login('kike', 'asd', 200)
     helper.containsNotification('Logged in', 'rgb(0, 128, 0)')
     cy.contains('kike')
   })
 
   it('fails with wrong credentials', function () {
-    submitLogin('incorrect_user', 'incorrect_password', 401)
-
+    helper.login('incorrect_user', 'incorrect_password', 401)
     helper.containsNotification('Login failed. Wrong credentials', 'rgb(255, 0, 0)')
 
     //screen unchanged
     cy.contains('User')
     cy.contains('Password')
   })
-
-  const submitLogin = (username, password, expectedStatus) => {
-    cy.get('#User').type(username)
-    cy.get('#Password').type(password)
-
-    helper.submitForm('http://localhost:3000/api/login', '#submitButton', expectedStatus)
-  }
 })

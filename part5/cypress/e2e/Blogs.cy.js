@@ -42,18 +42,12 @@ describe('Blogs', function () {
   })
 
   it('A blog can be created', function () {
-    const blogTitle = 'A new blog'
+    const dummy = helper.addDummyBlog()
 
-    helper.addNewBlog({
-      title: blogTitle,
-      author: 'Me',
-      url: 'www.mine.com'
-    })
-
-    helper.containsNotification(`A new blog: '${ blogTitle }', was added`, 'rgb(0, 128, 0)')
+    helper.containsNotification(`A new blog: '${ dummy.title }', was added`, 'rgb(0, 128, 0)')
 
     // check new blog has been added to blog list
-    cy.get('.blog').should('contain', blogTitle)
+    cy.get('.blog').should('contain', dummy.title)
 
     // form is collapsed
     cy.contains('new blog')
@@ -62,20 +56,36 @@ describe('Blogs', function () {
   it('Can like a blog', function () {
     const clickTimes = Math.floor(Math.random() * 10)
 
-    helper.addNewBlog({
-      title: 'A new blog',
-      author: 'Me',
-      url: 'www.mine.com'
-    })
+    helper.addDummyBlog()
 
     // show blog full content
-    cy.get('.blog').contains('button', 'view').click()
+    cy.get('.blog')
+      .contains('button', 'view')
+      .click()
 
-    // click 'like' n times
-    for (let i = 0; i < clickTimes; i++) {
+    for (let i = 0; i < clickTimes; i++)
       cy.get('#blog-full').contains('button', 'like').click()
-    }
 
     cy.get('#likes').contains(clickTimes)
+  })
+
+  it('Can delete a blog', function() {
+    const blogsCount = Math.max(2, Math.floor(Math.random() * 5))
+    const blogs = helper.addDummyBlog(blogsCount)
+    const deleteBlog = blogs[Math.floor(Math.random())]
+
+    // show full blog
+    cy.contains('.toggle-button', 'view').each((element) =>
+      element.trigger('click'))
+
+    // click delete
+    cy.intercept('DELETE', `${ helper.BLOGS_URL }/*`).as('deleteRequest')
+    cy.contains(deleteBlog.title)
+      .parent()
+      .find('.hover-button')
+      .click()
+    cy.wait('@deleteRequest').its('response.statusCode').should('eq', 204)
+
+    cy.contains(deleteBlog.title).should('not.exist')
   })
 })

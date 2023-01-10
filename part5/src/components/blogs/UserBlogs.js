@@ -14,10 +14,11 @@ const UserBlogs = ({ user, onBlogsChange }) => {
   const newBlogForm = useRef()
 
   const addNewBlog = async (blog) => {
+    newBlogForm.current.toggle()
+
     const addedBlog = await blogsService.addBlog(blog, user)
 
     if(addedBlog && Object.keys(addedBlog)) {
-      newBlogForm.current.toggle()
       refreshBlogs(blogs ? blogs.concat(addedBlog) : [addedBlog],{
         action: 'add',
         blog: addedBlog

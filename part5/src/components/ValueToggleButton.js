@@ -10,7 +10,7 @@ const ValueToggleButton = ({ labels, handleClick }) => {
   }
 
   return (
-    <button onClick={ toggle }>{ value }</button>
+    <button className='toggle-button' onClick={ toggle }>{ value }</button>
   )
 }
 
