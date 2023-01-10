@@ -54,4 +54,12 @@ const submitForm = (url, submitButtonSelector, expectedStatus) => {
 const openNewBlogForm = () =>
   cy.get('.toggable>.toggler-element>.toggle-button').click()
 
-export default { RESET_URL, USERS_URL, BLOGS_URL, LOGIN_URL, login, addDummyBlog, containsNotification, submitForm, openNewBlogForm }
+const expandAllBlogs = (blogsCount) => {
+  for (let i = 0; i < blogsCount; i++) {
+    cy.get('.blog').eq(i).contains('button', 'view').click()
+  }
+}
+
+export default {
+  RESET_URL, USERS_URL, BLOGS_URL, LOGIN_URL,
+  login, addDummyBlog, containsNotification, submitForm, openNewBlogForm, expandAllBlogs }

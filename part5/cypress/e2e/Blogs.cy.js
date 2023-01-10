@@ -1,4 +1,5 @@
 import helper from './cypressHelper'
+import {func} from "prop-types";
 
 describe('Blogs', function () {
   const USER = 'kike'
@@ -74,9 +75,7 @@ describe('Blogs', function () {
     const blogs = helper.addDummyBlog(blogsCount)
     const deleteBlog = blogs[Math.floor(Math.random())]
 
-    // show full blog
-    cy.contains('.toggle-button', 'view').each((element) =>
-      element.trigger('click'))
+    helper.expandAllBlogs(blogsCount)
 
     // click delete
     cy.intercept('DELETE', `${ helper.BLOGS_URL }/*`).as('deleteRequest')
@@ -87,5 +86,29 @@ describe('Blogs', function () {
     cy.wait('@deleteRequest').its('response.statusCode').should('eq', 204)
 
     cy.contains(deleteBlog.title).should('not.exist')
+  })
+
+  it('Added blogs are ordered by likes', function () {
+    const blogsCount = Math.max(2, Math.floor(Math.random() * 5))
+    const blogs = helper.addDummyBlog(blogsCount)
+
+    helper.expandAllBlogs(blogsCount)
+
+    for (let i = 0; i < blogsCount; i++) {
+      const likes = Math.max(1, Math.floor(Math.random() * 10))
+      blogs[i].likes = likes
+
+      const likeButton = cy.get('.blog').eq(i).contains('button', 'like')
+      for (let j = 0; j < likes; j++) {
+        likeButton.click()
+      }
+    }
+
+    blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
+
+    for (let i = 0; i < blogsCount; i++) {
+      cy.get('.blog').eq(i).should('contain', blogs[i].title)
+    }
+
   })
 })
