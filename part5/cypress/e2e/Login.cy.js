@@ -1,3 +1,5 @@
+import helper from './cypressHelper'
+
 beforeEach(function () {
   cy.request('POST', 'http://localhost:3000/api/testing/reset')
     .then(() =>
@@ -20,21 +22,14 @@ describe('Login test', function () {
   it('succeed with correct credentials', function () {
     submitLogin('kike', 'asd', 200)
 
-    cy.get('#notification')
-      .should('contain', 'Logged in')
-      .and('have.css', 'color')
-      .and('eq', 'rgb(0, 128, 0)')
-
+    helper.containsNotification('Logged in', 'rgb(0, 128, 0)')
     cy.contains('kike')
   })
 
   it('fails with wrong credentials', function () {
     submitLogin('incorrect_user', 'incorrect_password', 401)
 
-    cy.get('#notification')
-      .should('contain', 'Login failed. Wrong credentials')
-      .and('have.css', 'color')
-      .and('eq', 'rgb(255, 0, 0)')
+    helper.containsNotification('Login failed. Wrong credentials', 'rgb(255, 0, 0)')
 
     //screen unchanged
     cy.contains('User')
@@ -45,8 +40,6 @@ describe('Login test', function () {
     cy.get('#User').type(username)
     cy.get('#Password').type(password)
 
-    cy.intercept('POST', 'http://localhost:3000/api/login').as('loginRequest')
-    cy.get('#submitButton').click()
-    cy.wait('@loginRequest').its('response.statusCode').should('eq', expectedStatus)
+    helper.submitForm('http://localhost:3000/api/login', '#submitButton', expectedStatus)
   }
 })
