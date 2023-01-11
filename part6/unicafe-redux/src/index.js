@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createStore } from 'redux'
 import reducer from './reducer'
@@ -6,6 +6,8 @@ import reducer from './reducer'
 const store = createStore(reducer)
 
 const App = () => {
+
+  //region store actions
   const good = () => {
     store.dispatch({
       type: 'GOOD'
@@ -29,16 +31,17 @@ const App = () => {
       type: 'ZERO'
     })
   }
+  //endregion
 
   return (
     <div>
-      <button onClick={good}>good</button>
-      <button onClick={ok}>ok</button>
-      <button onClick={bad}>bad</button>
-      <button onClick={reset}>reset stats</button>
-      <div>good {store.getState().good}</div>
-      <div>ok {store.getState().ok}</div>
-      <div>bad {store.getState().bad}</div>
+      <button onClick={ good }>good</button>
+      <button onClick={ ok }>ok</button>
+      <button onClick={ bad }>bad</button>
+      <button onClick={ reset }>reset stats</button>
+      <div>good { store.getState().good }</div>
+      <div>ok { store.getState().ok }</div>
+      <div>bad { store.getState().bad }</div>
     </div>
   )
 }
