@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import { useState } from 'react'
 
 const CreateNew = (props) => {
   const [content, setContent] = useState('')
@@ -16,23 +16,33 @@ const CreateNew = (props) => {
     })
   }
 
+  const rowStyle = {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'space-between',
+    maxWidth: 300
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+      <form onSubmit={ handleSubmit }>
+        <div style={{ display:'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={ rowStyle }>
+            content
+            <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          </div>
+          <div style={ rowStyle }>
+            author
+            <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          </div>
+          <div style={ rowStyle }>
+            url for more info
+            <input name='info' value={info} onChange={(e) => setInfo(e.target.value)} />
+          </div>
         </div>
-        <div>
-          author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-        <div>
-          url for more info
-          <input name='info' value={info} onChange={(e) => setInfo(e.target.value)} />
-        </div>
-        <button>create</button>
+        <button style={{ margin: '8px 0 8px 0' }}>create</button>
       </form>
     </div>
   )
