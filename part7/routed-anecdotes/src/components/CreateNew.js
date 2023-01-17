@@ -23,6 +23,12 @@ const CreateNew = (props) => {
     maxWidth: 300
   }
 
+  const resetFields = () => {
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
   return (
     <div>
       <h2>create a new anecdote</h2>
@@ -41,7 +47,8 @@ const CreateNew = (props) => {
             <input {...info} />
           </div>
         </div>
-        <button style={{ margin: '8px 0 8px 0' }}>create</button>
+        <button style={{ margin: '8px 4px 8px 0' }}>create</button>
+        <button type='button' style={{ margin: '8px 0 8px 4px' }} onClick={ resetFields }>reset</button>
       </form>
     </div>
   )
