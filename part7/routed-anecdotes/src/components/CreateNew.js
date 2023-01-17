@@ -8,9 +8,9 @@ const CreateNew = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content: content.value,
-      author: author.value,
-      info: info.value,
+      content: content.props.value,
+      author: author.props.value,
+      info: info.props.value,
       votes: 0
     })
   }
@@ -36,15 +36,15 @@ const CreateNew = (props) => {
         <div style={{ display:'flex', flexDirection: 'column', gap: 8 }}>
           <div style={ rowStyle }>
             content
-            <input {...content} />
+            <input {...content.props} />
           </div>
           <div style={ rowStyle }>
             author
-            <input {...author} />
+            <input {...author.props} />
           </div>
           <div style={ rowStyle }>
             url for more info
-            <input {...info} />
+            <input {...info.props} />
           </div>
         </div>
         <button style={{ margin: '8px 4px 8px 0' }}>create</button>
