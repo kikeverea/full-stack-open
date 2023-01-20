@@ -8,9 +8,10 @@ import loginService from './services/login'
 import usersService from './services/users'
 import blogsService from './services/blogs'
 
+import { showNotification } from './reducers/notificationReducer'
+
 const App = () => {
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     const user = usersService.getUserFromLocal()
@@ -24,7 +25,8 @@ const App = () => {
       user.blogs = await blogsService.fetchUserBlogs(user.id)
       saveUserInLocal(user)
       showNotification('Logged in', 'success')
-    } else {
+    }
+    else {
       showNotification('Login failed. Wrong credentials', 'fail')
     }
   }
@@ -37,17 +39,6 @@ const App = () => {
   const saveUserInLocal = (user) => {
     usersService.saveUserInLocal(user)
     setUser({ ...user })
-  }
-
-  const showNotification = (message, type) => {
-    setNotification({
-      message: message,
-      type: type,
-    })
-
-    setTimeout(() => {
-      setNotification(null)
-    }, 3000)
   }
 
   const handleBlogsListChange = (change) => {
@@ -63,7 +54,7 @@ const App = () => {
   return (
     <div style={{ padding: 10 }}>
       <h1>{user !== null ? 'Blogs' : 'Log in'}</h1>
-      <Notification notification={notification} />
+      <Notification />
       {user !== null ? (
         <>
           <LoggedUser user={user} logout={logout} />
