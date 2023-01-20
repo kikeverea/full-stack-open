@@ -24,8 +24,7 @@ const App = () => {
       user.blogs = await blogsService.fetchUserBlogs(user.id)
       saveUserInLocal(user)
       showNotification('Logged in', 'success')
-    }
-    else {
+    } else {
       showNotification('Login failed. Wrong credentials', 'fail')
     }
   }
@@ -43,7 +42,7 @@ const App = () => {
   const showNotification = (message, type) => {
     setNotification({
       message: message,
-      type: type
+      type: type,
     })
 
     setTimeout(() => {
@@ -53,24 +52,26 @@ const App = () => {
 
   const handleBlogsListChange = (change) => {
     if (change.action === 'add')
-      showNotification(`A new blog: '${ change.blog.title }', was added`, 'success')
+      showNotification(
+        `A new blog: '${change.blog.title}', was added`,
+        'success'
+      )
 
     usersService.saveUserInLocal(user)
   }
 
   return (
     <div style={{ padding: 10 }}>
-      <h1>{ user !== null ? 'Blogs' : 'Log in'}</h1>
-      <Notification notification={ notification }/>
-      { user !== null
-        ?
+      <h1>{user !== null ? 'Blogs' : 'Log in'}</h1>
+      <Notification notification={notification} />
+      {user !== null ? (
         <>
-          <LoggedUser user={ user } logout={ logout } />
-          <UserBlogs user={ user } onBlogsChange={ handleBlogsListChange }/>
+          <LoggedUser user={user} logout={logout} />
+          <UserBlogs user={user} onBlogsChange={handleBlogsListChange} />
         </>
-        :
-        <LoginForm loginService={ loginService } userLoggedIn={ loggedIn }/>
-      }
+      ) : (
+        <LoginForm loginService={loginService} userLoggedIn={loggedIn} />
+      )}
     </div>
   )
 }
