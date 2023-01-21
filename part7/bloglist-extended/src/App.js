@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
-import UserBlogs from './components/blogs/UserBlogs'
+import Blogs from './components/blogs/Blogs'
 import LoggedUser from './components/LoggedUser'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 
 import loginService from './services/login'
 import usersService from './services/users'
-import blogsService from './services/blogs'
 
-import { showNotification } from './reducers/notificationReducer'
+import { showFailNotification, showSuccessNotification } from './reducers/notificationReducer'
 
 const App = () => {
   const [user, setUser] = useState(null)
@@ -22,12 +21,11 @@ const App = () => {
 
   const loggedIn = async (user) => {
     if (user) {
-      user.blogs = await blogsService.fetchUserBlogs(user.id)
       saveUserInLocal(user)
-      showNotification('Logged in', 'success')
+      showSuccessNotification('Logged in')
     }
     else {
-      showNotification('Login failed. Wrong credentials', 'fail')
+      showFailNotification('Login failed. Wrong credentials')
     }
   }
 
@@ -41,16 +39,6 @@ const App = () => {
     setUser({ ...user })
   }
 
-  const handleBlogsListChange = (change) => {
-    if (change.action === 'add')
-      showNotification(
-        `A new blog: '${change.blog.title}', was added`,
-        'success'
-      )
-
-    usersService.saveUserInLocal(user)
-  }
-
   return (
     <div style={{ padding: 10 }}>
       <h1>{user !== null ? 'Blogs' : 'Log in'}</h1>
@@ -58,7 +46,7 @@ const App = () => {
       {user !== null ? (
         <>
           <LoggedUser user={user} logout={logout} />
-          <UserBlogs user={user} onBlogsChange={handleBlogsListChange} />
+          <Blogs user={user} />
         </>
       ) : (
         <LoginForm loginService={loginService} userLoggedIn={loggedIn} />
