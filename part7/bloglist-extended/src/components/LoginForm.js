@@ -1,25 +1,22 @@
 import { useState } from 'react'
 import FormField from './FormField'
 import Flex from './Flex'
-import PropTypes from 'prop-types'
+import { logInUser } from '../reducers/loginReducer'
+import { useDispatch } from 'react-redux'
 
-const LoginForm = ({ loginService, userLoggedIn }) => {
+const LoginForm = () => {
+
+  const dispatch = useDispatch()
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    try {
-      const user = await loginService.login(username, password)
-      await userLoggedIn(user)
-      setUsername('')
-      setPassword('')
-    }
-    catch (exception) {
-      console.log(exception)
-      await userLoggedIn(null)
-    }
+    dispatch(logInUser(username, password))
+
+    setUsername('')
+    setPassword('')
   }
 
   return (
@@ -36,11 +33,6 @@ const LoginForm = ({ loginService, userLoggedIn }) => {
       </Flex>
     </form>
   )
-}
-
-LoginForm.propTypes = {
-  loginService: PropTypes.object.isRequired,
-  userLoggedIn: PropTypes.func.isRequired
 }
 
 export default LoginForm

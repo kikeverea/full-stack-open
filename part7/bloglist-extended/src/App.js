@@ -1,42 +1,39 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Blogs from './components/blogs/Blogs'
 import LoggedUser from './components/LoggedUser'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
 
-import loginService from './services/login'
-import usersService from './services/users'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { checkForLoggedInUser, logoutUser } from './reducers/loggedInUserReducer'
 import { showFailNotification, showSuccessNotification } from './reducers/notificationReducer'
+import { consumeLoginResult } from './reducers/loginReducer'
 
 const App = () => {
-  const [user, setUser] = useState(null)
+
+  const dispatch = useDispatch()
+  const user = useSelector(state => state.loggedInUser)
+  const loginResult = useSelector(state => state.login)
 
   useEffect(() => {
-    const user = usersService.getUserFromLocal()
-    if (user) {
-      setUser(user)
-    }
+    if (loginResult === null)
+      return
+
+    dispatch(loginResult === 'success'
+      ? showSuccessNotification('Logged in')
+      : showFailNotification('Log in failed. Wrong credentials'))
+
+    dispatch(consumeLoginResult())
+
+  }, [loginResult])
+
+
+  useEffect(() => {
+    dispatch(checkForLoggedInUser())
   }, [])
 
-  const loggedIn = async (user) => {
-    if (user) {
-      saveUserInLocal(user)
-      showSuccessNotification('Logged in')
-    }
-    else {
-      showFailNotification('Login failed. Wrong credentials')
-    }
-  }
-
   const logout = () => {
-    usersService.removeUserFromLocal()
-    setUser(null)
-  }
-
-  const saveUserInLocal = (user) => {
-    usersService.saveUserInLocal(user)
-    setUser({ ...user })
+    dispatch(logoutUser())
   }
 
   return (
@@ -49,7 +46,7 @@ const App = () => {
           <Blogs user={user} />
         </>
       ) : (
-        <LoginForm loginService={loginService} userLoggedIn={loggedIn} />
+        <LoginForm />
       )}
     </div>
   )
