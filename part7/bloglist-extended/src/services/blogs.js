@@ -2,6 +2,11 @@ import axios from 'axios'
 
 const baseUrl = '/api/blogs'
 
+const fetchAll = async () => {
+  const response = await axios.get(baseUrl)
+  return response.data
+}
+
 const fetchUserBlogs = async (id) => {
   const response = await axios.get('/api/users')
   const users = response.data
@@ -10,24 +15,22 @@ const fetchUserBlogs = async (id) => {
   return loggedInUser.blogs
 }
 
-const addBlog = async (blog, user) => {
-  const config = {
-    headers: { Authorization: `bearer ${ user.token }` },
-  }
-
-  const response = await axios.post('/api/blogs', blog, config)
+const createBlog = async (blog, user) => {
+  const response = await axios.post(baseUrl, blog, config(user))
   return response.data
 }
 
 const updateBlog = async (blog, user) => {
-  blog = {
-    ...blog,
-    user: user.id
-  }
-
+  blog = formatBlogForUpdate(blog)
   const response = await axios.put(`${ baseUrl }/${ blog.id }`, blog, config(user))
-
   return response.status === 200
+}
+
+const formatBlogForUpdate = blog => {
+  return {
+    ...blog,
+    user: blog.user.id
+  }
 }
 
 const deleteBlog = async (blog, user) => {
@@ -44,4 +47,4 @@ const config = (user) => {
 }
 
 
-export default { fetchUserBlogs, addBlog, updateBlog, deleteBlog }
+export default { fetchAll, fetchUserBlogs, createBlog, updateBlog, deleteBlog }

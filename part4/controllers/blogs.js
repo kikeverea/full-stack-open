@@ -4,7 +4,7 @@ const User = require('../models/user')
 const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user', { name: 1, username: 1 })
+  const blogs = await Blog.find({}).populate('user', { id: 1, name: 1, username: 1 })
   response.json(blogs)
 })
 
@@ -42,8 +42,9 @@ blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
 
   const id = request.params.id
   const blog = await Blog.findById(id)
+  const isUpdatingLikes = updatingLikes(blog, { title, author, url, likes })
 
-  if (userIsNotCreatorOfBlog(user, blog))
+  if (!isUpdatingLikes && userIsNotCreatorOfBlog(user, blog))
     return unauthorizedUserResponse(response)
 
   if (!title && !url) {
@@ -78,6 +79,12 @@ const userIsNotCreatorOfBlog = (userId, blog) => {
   if (blog.user.toString() !== userId)
     return true
 }
+
+const updatingLikes = (blog, update) =>
+  blog.title === update.title &&
+  blog.author === update.author &&
+  blog.url === update.url &&
+  blog.likes !== update.likes
 
 const unauthorizedUserResponse = (response) => {
   response

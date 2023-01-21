@@ -5,7 +5,6 @@ const notificationSlice = createSlice({
   initialState: null,
   reducers: {
     setNotification(state, action) {
-      console.log('setting notification: ', action.payload)
       return action.payload
     },
     clearNotification() {
@@ -14,13 +13,19 @@ const notificationSlice = createSlice({
   },
 })
 
-export const showNotification = (content, type, duration = 5000) => {
-  console.log('called')
+export const showSuccessNotification = (content, duration) => {
+  return showNotification(content, 'success', duration)
+}
+
+export const showFailNotification = (content, duration) => {
+  return showNotification(content, 'fail', duration)
+}
+
+const showNotification = (content, type, duration = 5000) => {
   return (dispatch, getState) => {
     const notificationOnDisplay = getState().notification
 
     if (notificationOnDisplay) {
-      console.log('another notification is on display')
       clearTimeout(notificationOnDisplay.id)
     }
 
@@ -29,7 +34,6 @@ export const showNotification = (content, type, duration = 5000) => {
     },
     duration)
 
-    console.log('dispatching')
     dispatch(setNotification({ content, type, id: notificationId }))
   }
 }

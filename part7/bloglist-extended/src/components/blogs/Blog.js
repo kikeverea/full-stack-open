@@ -3,9 +3,8 @@ import { useState } from 'react'
 import ValueToggleButton from '../ValueToggleButton'
 import HoverButton from '../HoverButton'
 
-const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
+const Blog = ({ blog, like, remove }) => {
 
-  const [ likes, setLikes ] = useState(blog.likes ? blog.likes : 0)
   const [ showFullContent, setShowFullContent ] = useState(false)
 
   const simpleContent = () =>
@@ -16,19 +15,12 @@ const Blog = ({ blog, onUpdateRequest, onDeleteRequest }) => {
       <div id='title'>{ blog.title }</div>
       <div id='url'>{ blog.url }</div>
       <Flex direction={ 'row' } customStyle={{ gap: 10 }}>
-        <div id='likes'>{ likes }</div>
-        <button onClick={ () => likeBlog(blog) }>like</button>
+        <div id='likes'>{ blog.likes }</div>
+        <button onClick={ () => like(blog) }>like</button>
       </Flex>
       <div id='author'>{ blog.author }</div>
-      <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => onDeleteRequest(blog) }/>
+      <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => remove(blog) }/>
     </Flex>
-
-  const likeBlog = (blog) => {
-    const newLikes = likes + 1
-    setLikes(newLikes)
-    blog.likes = newLikes
-    onUpdateRequest(blog)
-  }
 
   const toggleContent = () =>
     setShowFullContent(!showFullContent)
