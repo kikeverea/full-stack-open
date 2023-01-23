@@ -10,6 +10,7 @@ import { checkForLoggedInUser, logoutUser } from './reducers/loggedInUserReducer
 import { showFailNotification, showSuccessNotification } from './reducers/notificationReducer'
 import { consumeLoginResult } from './reducers/loginReducer'
 import { Route, Routes } from 'react-router-dom'
+import User from './components/User'
 
 const App = () => {
 
@@ -54,6 +55,7 @@ const App = () => {
           )
         }/>
         <Route path='/users' element={ <Users /> }/>
+        <Route path='/users/:id' element={ <User /> }/>
       </Routes>
     </div>
   )
