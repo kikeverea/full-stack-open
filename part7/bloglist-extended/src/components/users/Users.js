@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { initializeUsers } from '../reducers/usersReducer'
+import { initializeUsers } from '../../reducers/usersReducer'
 
-import { TableHeader } from './styled'
-import { TableColumn } from './styled'
+import { TableHeader } from '../styled'
+import { TableColumn } from '../styled'
 import { Link } from 'react-router-dom'
 
 const Users = () => {

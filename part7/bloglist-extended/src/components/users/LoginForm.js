@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import FormField from './FormField'
-import Flex from './Flex'
-import { logInUser } from '../reducers/loginReducer'
+import FormField from '../FormField'
+import Flex from '../Flex'
+import { logInUser } from '../../reducers/loginReducer'
 import { useDispatch } from 'react-redux'
 
 const LoginForm = () => {

@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import FormField from '../FormField'
-import ErrorMessage from '../ErrorMessage'
-import FormButtons from '../FormButtons'
 import Flex from '../Flex'
+import { showFailNotification } from '../../reducers/notificationReducer'
+import { useDispatch } from 'react-redux'
+import { FlexRow } from '../styled'
 
 const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-  const [errorMessage, setErrorMessage] = useState(null)
+
+  const dispatch = useDispatch()
 
   const submitBlog = (event) => {
     event.preventDefault()
@@ -55,10 +57,7 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
   }
 
   const displayErrorMessage = (error) => {
-    setErrorMessage(error)
-    setTimeout(() => {
-      setErrorMessage(null)
-    }, 5000)
+    dispatch(showFailNotification(error))
   }
 
   const addToError = (error, message) => {
@@ -84,13 +83,12 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
           <FormField name='Title' value={ title } inputChange={ setTitle } />
           <FormField name='Author' value={ author } inputChange={ setAuthor } />
           <FormField name='Url' value={ url } inputChange={ setUrl } />
-          <FormButtons>
+          <FlexRow>
             <input type='submit' value='Submit' />
             <button id='new-blog-submit' onClick={ onCancel }>Cancel</button>
-          </FormButtons>
+          </FlexRow>
         </Flex>
       </form>
-      <ErrorMessage errorMessage={ errorMessage } />
       <br />
     </div>
   )

@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux'
 import { Navigate, useParams } from 'react-router-dom'
-import { FlexRow } from './styled'
+import { FlexRow } from '../styled'
 
 const User = () => {
 

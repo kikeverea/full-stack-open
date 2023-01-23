@@ -1,16 +1,16 @@
 import { useEffect, useLayoutEffect } from 'react'
 import Blogs from './components/blogs/Blogs'
-import LoggedUser from './components/LoggedUser'
-import LoginForm from './components/LoginForm'
+import LoggedUser from './components/users/LoggedUser'
+import LoginForm from './components/users/LoginForm'
 import Notification from './components/Notification'
-import Users from './components/Users'
+import Users from './components/users/Users'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { checkForLoggedInUser, logoutUser } from './reducers/loggedInUserReducer'
 import { clearNotification, showFailNotification, showSuccessNotification } from './reducers/notificationReducer'
 import { consumeLoginResult } from './reducers/loginReducer'
 import { Route, Routes, useLocation } from 'react-router-dom'
-import User from './components/User'
+import User from './components/users/User'
 import Blog from './components/blogs/Blog'
 
 const App = () => {
