@@ -1,21 +1,22 @@
 import { useEffect, useRef } from 'react'
 
 import Flex from '../Flex'
-import Blog from './Blog'
+import BlogItem from './BlogItem'
 import Toggable from '../Toggable'
 import NewBlogForm from './NewBlogForm'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { createNewBlog, deleteBlog, initializeBlogs, likeBlog } from '../../reducers/blogsReducer'
+import { createNewBlog, initializeBlogs } from '../../reducers/blogsReducer'
 import { showSuccessNotification, showFailNotification } from '../../reducers/notificationReducer'
 
 import { consumeUpdateState } from '../../reducers/updateBlogsState'
 
-const Blogs = ({ user }) => {
+const Blogs = () => {
 
   const dispatch = useDispatch()
 
   const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.loggedInUser)
   const blogsUpdateState = useSelector(state => state.updateBlogsState)
 
   useEffect(() => {
@@ -46,16 +47,7 @@ const Blogs = ({ user }) => {
     newBlogForm.current.toggle()
   }
 
-  const like = (blog) => {
-    dispatch(likeBlog(blog, user))
-  }
 
-  const removeBlog = async (blog) => {
-    const deleteConfirmed = window.confirm(`Remove blog '${ blog.title }'?`)
-
-    if (deleteConfirmed)
-      dispatch(deleteBlog(blog, user))
-  }
 
   return (
     <Flex customStyle={{ flexDirection: 'column', gap: 5, maxWidth: 480 }}>
@@ -66,10 +58,8 @@ const Blogs = ({ user }) => {
         <>
           {
             blogs.map(blog =>
-              <Blog key={ blog.id }
-                blog={ blog }
-                like={ like }
-                remove={ removeBlog }/>
+              <BlogItem key={ blog.id }
+                blog={ blog } />
             )}
         </>
         : 'No blogs listed' }

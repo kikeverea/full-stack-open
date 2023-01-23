@@ -1,41 +1,57 @@
-import Flex from '../Flex'
-import { useState } from 'react'
-import ValueToggleButton from '../ValueToggleButton'
+import { Navigate, useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { FlexRow, FlexColumn } from '../styled'
 import HoverButton from '../HoverButton'
+import { deleteBlog, likeBlog } from '../../reducers/blogsReducer'
+import { useEffect } from 'react'
+import { consumeUpdateState } from '../../reducers/updateBlogsState'
+import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
 
-const Blog = ({ blog, like, remove }) => {
+const Blog = () => {
 
-  const [ showFullContent, setShowFullContent ] = useState(false)
+  const id = useParams().id
+  const dispatch = useDispatch()
 
-  const simpleContent = () =>
-    <div id='title'>{ blog.title }</div>
+  const blog = useSelector(state => state.blogs.find(blog => blog.id === id))
+  const loggedInUser = useSelector(state => state.loggedInUser)
+  const updateBlogState = useSelector(state => state.updateBlogsState)
 
-  const fullContent = () =>
-    <Flex id='blog-full' direction={ 'column' } customStyle={{ gap: 10 }}>
-      <div id='title'>{ blog.title }</div>
-      <div id='url'>{ blog.url }</div>
-      <Flex direction={ 'row' } customStyle={{ gap: 10 }}>
-        <div id='likes'>{ blog.likes }</div>
-        <button onClick={ () => like(blog) }>like</button>
-      </Flex>
-      <div id='author'>{ blog.author }</div>
-      <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => remove(blog) }/>
-    </Flex>
+  useEffect(() => {
+    if (updateBlogState) {
+      dispatch(updateBlogState.result === 'success'
+        ? showSuccessNotification(updateBlogState.content)
+        : showFailNotification(updateBlogState.content))
 
-  const toggleContent = () =>
-    setShowFullContent(!showFullContent)
+      dispatch(consumeUpdateState())
+    }
+  }, [updateBlogState])
+
+  const like = (blog) => {
+    dispatch(likeBlog(blog, loggedInUser))
+  }
+
+  const remove = (blog) => {
+    const deleteConfirmed = window.confirm(`Remove blog '${ blog.title }'?`)
+
+    if (deleteConfirmed)
+      dispatch(deleteBlog(blog, loggedInUser))
+  }
 
   return (
-    <Flex direction={ 'row' } className='blog' customStyle={{
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      border: '1px solid black',
-      padding: '10px 16px 10px 16px'
-    }}
-    >
-      { showFullContent ? fullContent() : simpleContent() }
-      <ValueToggleButton labels={[ 'view', 'hide' ]} handleClick={ toggleContent }/>
-    </Flex>
+    blog ?
+      <>
+        <h1>{ blog.title }</h1>
+        <FlexColumn>
+          <div id='url'>{ blog.url }</div>
+          <FlexRow>
+            <div id='likes'>{ blog.likes }</div>
+            <button onClick={ () => like(blog) }>like</button>
+          </FlexRow>
+          <div id='author'>added by { blog.author }</div>
+          <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => remove(blog) }/>
+        </FlexColumn>
+      </>
+      : <Navigate replace to='/blogs'/>
   )
 }
 

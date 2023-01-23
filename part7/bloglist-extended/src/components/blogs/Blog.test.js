@@ -1,11 +1,11 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import { render, screen } from '@testing-library/react'
-import Blog from './Blog'
+import BlogItem from './BlogItem'
 import userEvent from '@testing-library/user-event'
 
 
-describe('Blog test', () => {
+describe('BlogItem test', () => {
   const dummyBlog = {
     title: 'blog',
     author: 'me',
@@ -18,7 +18,7 @@ describe('Blog test', () => {
 
   beforeEach(() => {
     container = render(
-      <Blog
+      <BlogItem
         blog={ dummyBlog }
         onUpdateRequest={ onUpdateRequest }
         onDeleteRequest={ onDeleteRequest }/>)
