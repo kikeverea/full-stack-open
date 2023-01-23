@@ -1,4 +1,13 @@
+import axios from 'axios'
+
 const LOCAL_STORAGE_USER_KEY = 'loggedInUser'
+
+const usersUrl = '/api/users'
+
+const fetchAllUsers = async () => {
+  const response = await axios.get(usersUrl)
+  return response.data
+}
 
 const getUserFromLocal = () => {
   const json = window.localStorage.getItem(LOCAL_STORAGE_USER_KEY)
@@ -11,4 +20,4 @@ const saveUserInLocal = (user) =>
 const removeUserFromLocal = () =>
   window.localStorage.removeItem(LOCAL_STORAGE_USER_KEY)
 
-export default { getUserFromLocal, saveUserInLocal, removeUserFromLocal }
+export default { fetchAllUsers, getUserFromLocal, saveUserInLocal, removeUserFromLocal }

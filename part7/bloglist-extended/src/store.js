@@ -4,6 +4,7 @@ import updateBlogsState from './reducers/updateBlogsState'
 
 import loggedInUser from './reducers/loggedInUserReducer'
 import login from './reducers/loginReducer'
+import usersReducer from './reducers/usersReducer'
 
 import { configureStore } from '@reduxjs/toolkit'
 
@@ -12,8 +13,9 @@ const store = configureStore({
     notification: notificationReducer,
     blogs: blogsReducer,
     updateBlogsState: updateBlogsState,
+    login: login,
     loggedInUser: loggedInUser,
-    login: login
+    users: usersReducer
   }
 })
 

@@ -1,31 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit'
 import blogsService from '../services/blogs'
 import { blogsUpdateSucceededMessage, blogsUpdateFailedMessage } from './updateBlogsState'
+import listActions from './repositoryReducerActions'
+
+const sortByLikes = (blogs) =>
+  blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
 
 const blogsReducer = createSlice({
   name: 'blogs',
   initialState: [],
-  reducers: {
-    setAll(state, action) {
-      return sortByLikes(action.payload)
-    },
-    add(state, action) {
-      state.push(action.payload)
-    },
-    update(state, action) {
-      const toUpdate = action.payload
-      const updated = state.map(blog => blog.id === toUpdate.id ? toUpdate : blog)
-      return sortByLikes(updated)
-    },
-    remove(state, action) {
-      const toDelete = action.payload
-      return state.filter(blog => blog.id !== toDelete.id)
-    }
-  }
+  reducers: listActions({
+    setAllDownstream: sortByLikes,
+    updateDownstream: sortByLikes })
 })
-
-const sortByLikes = (blogs) =>
-  blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
 
 export const initializeBlogs = () => {
   return async dispatch => {
