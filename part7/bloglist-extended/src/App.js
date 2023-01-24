@@ -16,15 +16,13 @@ const App = () => {
 
   const dispatch = useDispatch()
 
+  const location = useLocation()
   const user = useSelector(state => state.loggedInUser)
   const notification = useSelector(state => state.notification)
-
 
   useEffect(() => {
     dispatch(checkForLoggedInUser())
   }, [])
-
-  const location = useLocation()
 
   useLayoutEffect(() => {
     if (notification) {
