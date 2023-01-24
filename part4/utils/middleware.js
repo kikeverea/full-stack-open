@@ -51,8 +51,16 @@ const userExtractor = (request, response, next) => {
   next()
 }
 
+const commentsExtractor = (request, response, next) => {
+  const comments = request.body.comments
+  request.comments = comments.map(comment => comment.id)
+
+  next()
+}
+
 module.exports = {
   errorHandler,
   tokenExtractor,
-  userExtractor
+  userExtractor,
+  commentsExtractor
 }

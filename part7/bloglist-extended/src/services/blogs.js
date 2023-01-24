@@ -26,6 +26,22 @@ const updateBlog = async (blog, user) => {
   return response.status === 200
 }
 
+const updateBlogLikes = async (blog) => {
+  blog = formatBlogForUpdate(blog)
+  const response = await axios.put(`${ baseUrl }/${ blog.id }/likes`, blog)
+  return response.status === 200
+}
+
+const addCommentToBlog = async (comment, blog) => {
+  const response = await axios.post(`${ baseUrl }/${ blog.id }/comments`, { comment })
+  return response.data
+}
+
+const deleteCommentFromBlog = async (comment, blog) => {
+  const response = await axios.delete(`${ baseUrl }/${ blog.id }/comments/${ comment.id }`)
+  return response.status === 204
+}
+
 const formatBlogForUpdate = blog => {
   return {
     ...blog,
@@ -46,5 +62,13 @@ const config = (user) => {
   )
 }
 
-
-export default { fetchAll, fetchUserBlogs, createBlog, updateBlog, deleteBlog }
+export default {
+  fetchAll,
+  fetchUserBlogs,
+  createBlog,
+  updateBlog,
+  updateBlogLikes,
+  addCommentToBlog,
+  deleteCommentFromBlog,
+  deleteBlog
+}

@@ -34,3 +34,19 @@ export const ListItem = styled.div`
   border: 1px solid black;
   padding: 10px 16px 10px 16px;
   `
+
+export const DeleteButtonX = styled.button`
+  & {
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    border-color: transparent;
+    background: transparent;
+    margin-top: 2px;
+  }
+
+  &:hover {
+    box-shadow: 0 0 4px #858585;
+    cursor: pointer;
+  }
+`

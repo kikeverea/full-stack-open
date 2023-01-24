@@ -48,6 +48,31 @@ export const likeBlog = (blog, user) => {
   }
 }
 
+export const addCommentToBlog = (comment, blog) => {
+  return async dispatch => {
+    const newComment = await blogsService.addCommentToBlog(comment, blog)
+
+    if (newComment) {
+      const updatedBlog = { ...blog, comments: [...blog.comments, newComment] }
+      dispatch(update(updatedBlog))
+    }
+  }
+}
+
+export const removeCommentFromBlog = (comment, blog) => {
+  return async dispatch => {
+    const deleted = await blogsService.deleteCommentFromBlog(comment, blog)
+
+    if (deleted) {
+      const updatedBlog = {
+        ...blog,
+        comments: blog.comments.filter(c => c.id !== comment.id )
+      }
+      dispatch(update(updatedBlog))
+    }
+  }
+}
+
 export const deleteBlog = (blog, user) => {
   return async dispatch => {
 

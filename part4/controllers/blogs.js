@@ -1,15 +1,19 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const Comment = require('../models/comment')
 const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user', { id: 1, name: 1, username: 1 })
+  const blogs = await Blog.find({})
+    .populate('user', { id: 1, name: 1, username: 1 })
+    .populate('comments')
+
   response.json(blogs)
 })
 
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
-  const { title, author, url, likes = 0 } = request.body
+  const { title, author, url, likes = 0, comments = [] } = request.body
 
   if (!title && !url) {
     return response.status(400).json({
@@ -26,6 +30,7 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     author: author,
     url: url,
     likes: likes,
+    comments: comments,
     user: user._id
   })
 
@@ -37,28 +42,60 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
-blogsRouter.put('/:id', middleware.userExtractor, async (request, response) => {
-  const { title, author, url, likes = 0, user = request.user.id } = request.body
+blogsRouter.put('/:id', middleware.userExtractor, middleware.commentsExtractor, async (request, response) => {
+  const { title, author, url, likes = 0, comments = request.comments, user = request.user.id } = request.body
 
   const id = request.params.id
   const blog = await Blog.findById(id)
-  const isUpdatingLikes = updatingLikes(blog, { title, author, url, likes })
 
-  if (!isUpdatingLikes && userIsNotCreatorOfBlog(user, blog))
+  if (userIsNotCreatorOfBlog(user, blog))
     return unauthorizedUserResponse(response)
 
-  if (!title && !url) {
-    return response.status(400).json({
-      error: 'Title or url must be provided'
-    })
-  }
+  const updated = await updateBlog(request.params.id, { title, author, url, likes, comments, user })
+  response.status(200).json(updated)
+})
 
+blogsRouter.put('/:id/likes', async (request, response) => {
+  const { likes } = request.body
+
+  const updated = await updateBlog(request.params.id, { likes })
+  response.status(200).json(updated)
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const comment = request.body.comment
+
+  const blogId = request.params.id
+  const blog = await Blog.findById(blogId)
+
+  const toSave = new Comment({
+    comment,
+    blog: blog._id
+  })
+
+  const savedComment = await toSave.save()
+
+  await updateBlog(request.params.id, { comments: [...blog.comments, savedComment._id] })
+  response.status(201).json(savedComment)
+})
+
+const updateBlog = async (blogId, updateFields) =>
   // atomic
-  const updated = await Blog.findByIdAndUpdate(id,
-    { title, author, url, likes, user },
+  await Blog.findByIdAndUpdate(blogId,
+    updateFields,
     { new: true, runValidators: true, context: 'query' })
 
-  response.status(200).json(updated)
+blogsRouter.delete('/:blogId/comments/:commentId', async (request, response) => {
+  const commentId = request.params.commentId
+  const blogId = request.params.blogId
+
+  const comment = await Comment.findById(commentId)
+  const blog = await Blog.findById(blogId)
+
+  await comment.remove()
+  await updateBlog(blogId, { comments: blog.comments.filter(comment => comment.id !== commentId) })
+
+  response.status(204).end()
 })
 
 blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
@@ -70,7 +107,7 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
   if (userIsNotCreatorOfBlog(user.id, blog))
     return unauthorizedUserResponse(response)
 
-  blog.remove()
+  await blog.remove()
 
   response.status(204).end()
 })
@@ -79,12 +116,6 @@ const userIsNotCreatorOfBlog = (userId, blog) => {
   if (blog.user.toString() !== userId)
     return true
 }
-
-const updatingLikes = (blog, update) =>
-  blog.title === update.title &&
-  blog.author === update.author &&
-  blog.url === update.url &&
-  blog.likes !== update.likes
 
 const unauthorizedUserResponse = (response) => {
   response

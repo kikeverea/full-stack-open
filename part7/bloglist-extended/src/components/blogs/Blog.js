@@ -6,6 +6,7 @@ import { deleteBlog, likeBlog } from '../../reducers/blogsReducer'
 import { useEffect } from 'react'
 import { consumeUpdateState } from '../../reducers/updateBlogsState'
 import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
+import Comments from './Comments'
 
 const Blog = () => {
 
@@ -41,14 +42,15 @@ const Blog = () => {
     blog ?
       <>
         <h1>{ blog.title }</h1>
-        <FlexColumn>
-          <div id='url'>{ blog.url }</div>
+        <FlexColumn style={{ gap: 16 }}>
+          <a id='url' href={ blog.url }>{ blog.url }</a>
           <FlexRow>
             <div id='likes'>{ blog.likes }</div>
             <button onClick={ () => like(blog) }>like</button>
           </FlexRow>
           <div id='author'>added by { blog.author }</div>
           <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => remove(blog) }/>
+          <Comments blog={ blog }/>
         </FlexColumn>
       </>
       : <Navigate replace to='/blogs'/>
