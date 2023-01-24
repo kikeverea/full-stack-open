@@ -14,6 +14,13 @@ export const FlexRow = styled.div`
     gap: 16px;
   `
 
+export const FlexSpacedRow = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 18px 10px 18px;
+  `
+
 export const FlexColumn = styled.div`
     display: flex;
     flex-direction: column;

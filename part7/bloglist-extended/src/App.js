@@ -3,6 +3,7 @@ import Blogs from './components/blogs/Blogs'
 import LoginForm from './components/users/LoginForm'
 import Notification from './components/Notification'
 import Users from './components/users/Users'
+import NavigationBar from './components/NavigationBar'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { checkForLoggedInUser } from './reducers/loggedInUserReducer'
@@ -33,7 +34,7 @@ const App = () => {
 
   return (
     <div style={{ padding: 10 }}>
-      <h1>{user !== null ? 'Blogs' : 'Log in'}</h1>
+      { user && <NavigationBar /> }
       <Notification />
       <Routes>
         { ['/', '/blogs'].map(path =>
