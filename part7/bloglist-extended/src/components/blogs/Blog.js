@@ -28,7 +28,7 @@ const Blog = () => {
   }, [updateBlogState])
 
   const like = (blog) => {
-    dispatch(likeBlog(blog, loggedInUser))
+    dispatch(likeBlog(blog))
   }
 
   const remove = (blog) => {

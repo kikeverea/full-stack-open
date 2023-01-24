@@ -33,10 +33,10 @@ export const createNewBlog = (content, user) => {
   }
 }
 
-export const likeBlog = (blog, user) => {
+export const likeBlog = (blog) => {
   return async dispatch => {
     const toUpdate = { ...blog, likes: blog.likes + 1 }
-    const updated = await blogsService.updateBlog(toUpdate, user)
+    const updated = await blogsService.updateBlogLikes(toUpdate)
 
     if (updated) {
       dispatch(update(toUpdate))

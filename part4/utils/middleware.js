@@ -53,6 +53,7 @@ const userExtractor = (request, response, next) => {
 
 const commentsExtractor = (request, response, next) => {
   const comments = request.body.comments
+
   request.comments = comments.map(comment => comment.id)
 
   next()
