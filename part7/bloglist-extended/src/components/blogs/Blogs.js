@@ -47,23 +47,25 @@ const Blogs = () => {
     newBlogForm.current.toggle()
   }
 
-
-
   return (
-    <Flex customStyle={{ flexDirection: 'column', gap: 5, maxWidth: 480 }}>
-      <Toggable id='new-blog-form' label={ 'new blog' } ref={ newBlogForm }>
-        <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
-      </Toggable>
-      { blogs ?
-        <>
-          {
-            blogs.map(blog =>
-              <BlogItem key={ blog.id }
-                blog={ blog } />
-            )}
-        </>
-        : 'No blogs listed' }
-    </Flex>
+    <>
+      <h1>Blogs</h1>
+      <Flex customStyle={{ flexDirection: 'column', gap: 5, maxWidth: 480 }}>
+        <Toggable id='new-blog-form' label={ 'new blog' } ref={ newBlogForm }>
+          <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
+        </Toggable>
+        { blogs ?
+          <>
+            {
+              blogs.map(blog =>
+                <BlogItem
+                  key={ blog.id }
+                  blog={ blog } />
+              )}
+          </>
+          : 'No blogs listed' }
+      </Flex>
+    </>
   )
 }
 
