@@ -52,7 +52,7 @@ const initialBlogs = [
 ]
 
 const blogsInDb = async () => {
-  const blogs = await Blog.find({}).populate('user')
+  const blogs = await Blog.find({}).populate('user').populate('comments')
   return blogs.map(blog => blog.toJSON())
 }
 
@@ -61,27 +61,14 @@ const dummyBlog = ignoreKeys => {
     title: 'A new blog',
     author: 'Me',
     url: 'www.my-url.com',
-    likes: 89
+    likes: 89,
+    comments: []
   }
 
   if (ignoreKeys)
     deleteKeys(dummy, ignoreKeys.ignore)
 
   return dummy
-}
-
-const formatForComparison = (blog, ignoreKeys) => {
-  const formatted = {
-    title: blog.title,
-    author: blog.author,
-    likes: blog.likes,
-    url: blog.url
-  }
-
-  if (ignoreKeys)
-    deleteKeys(formatted, ignoreKeys)
-
-  return formatted
 }
 
 const deleteKeys = (blog, keys) => {
@@ -106,31 +93,44 @@ const areEqual = (blog1, blog2, ignoreKeys) => {
   return true
 }
 
-const getBlogFromTokenUser = async (token, blogsAtStart) => {
-  if (!blogsAtStart) {
-    blogsAtStart = await blogsInDb()
+const formatForComparison = (blog, ignoreKeys) => {
+  const formatted = {
+    title: blog.title,
+    author: blog.author,
+    likes: blog.likes,
+    url: blog.url
   }
 
-  return getBlogFrom(blogsAtStart, blog => blog.user.id === token.id)
+  if (ignoreKeys)
+    deleteKeys(formatted, ignoreKeys)
+
+  return formatted
 }
 
-const getBlogFromUserDifferentToTokenUser = async (token, blogsAtStart) => {
-  if (!blogsAtStart) {
+const randomBlogFromUser = async (user, blogsAtStart) => {
+  if (!blogsAtStart)
     blogsAtStart = await blogsInDb()
-  }
 
-  return getBlogFrom(blogsAtStart, blog => blog.user.id !== token.id)
+  const blogs = blogsAtStart.filter(blog => blog.user.id === user.id)
+
+  return randomBlogFrom(blogs)
 }
 
-const filterBlogEqualTo = (collection, compare, options) => {
-  return getBlogFrom(collection, blog =>
-    areEqual(blog, compare, options ? options.ignore : undefined))
+const randomBlogFromUserDifferentThan = async (user, blogsAtStart) => {
+  if (!blogsAtStart)
+    blogsAtStart = await blogsInDb()
+
+  const blogs = blogsAtStart.filter(blog => blog.user.id !== user.id)
+
+  return randomBlogFrom(blogs)
 }
 
-const getBlogFrom = (blogs, predicate) => {
-  const filtered = blogs.filter(predicate)
+const findBlogEqualTo = (collection, compare, options) =>
+  collection.find(blog => areEqual(blog, compare, options ? options.ignore : undefined))
 
-  return filtered[0]
+const randomBlogFrom = (blogs) => {
+  const random = Math.floor(Math.random() * blogs.length)
+  return blogs[random]
 }
 
 module.exports = {
@@ -140,7 +140,7 @@ module.exports = {
   blogsInDb,
   formatForComparison,
   areEqual,
-  getBlogFromTokenUser,
-  getBlogFromUserDifferentToTokenUser,
-  filterBlogEqualTo
+  randomBlogFromUser,
+  randomBlogFromUserDifferentThan,
+  findBlogEqualTo
 }

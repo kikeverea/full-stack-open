@@ -58,7 +58,7 @@ describe('create new users', () => {
 
   test('creating a user with an existing username, fails with status 400', async () => {
     const usersAtStart = await helper.usersInDb()
-    const randomInd = Math.floor(Math.random(usersAtStart.length - 1))
+    const randomInd = Math.floor(Math.random() * usersAtStart.length)
     const userInDb = usersAtStart[randomInd]
 
     const newUser = {
@@ -104,6 +104,65 @@ describe('create new users', () => {
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length)
   }
+
+  describe('update existing users', () => {
+    test('updates user name without modifying other properties', async () => {
+      const user = helper.randomUser()
+      const token = await loginUser(user)
+      const toUpdate = { ...user, name: 'New name', username: 'user' }
+
+      await updateUser(toUpdate, { token })
+
+      const usersAfter = await helper.usersInDb()
+      const updatedUser = usersAfter.find(after => after.id === user.id)
+
+      expect(updatedUser.name).toBe('New name')
+      expect(updatedUser.username).toBe(user.username)
+      expect(updatedUser.name === user.name).toBe(false)
+    })
+
+    test('Updating without token fails with 401', async () => {
+      const user = helper.randomUser()
+      const toUpdate = { ...user, name: 'New name', username: 'user' }
+
+      await updateUser(toUpdate, { expectedStatus: 401 })
+    })
+
+    test('Updating different user fails with 401', async () => {
+      const users = helper.initialUsers
+      const user1 = users[1]
+      const user2 = users[2]
+
+      const token = await loginUser(user1)
+      const toUpdate = { ...user2, name: 'New name', username: 'user' }
+
+      await updateUser(toUpdate, { expectedStatus: 401, token })
+    })
+
+    const loginUser = async user => {
+      const credentials = {
+        username: user.username,
+        password: user.passwordHash
+      }
+
+      const response = await api
+        .post('/api/login')
+        .send(credentials)
+        .expect(200)
+
+      user.id = response.body.id
+
+      return response.body.token
+    }
+
+    const updateUser = async (user, { expectedStatus = 204, token = '' } = {}) => {
+      await api
+        .put(`/api/users/${ user.id }`)
+        .set('Authorization', `bearer ${ token }`)
+        .send(user)
+        .expect(expectedStatus)
+    }
+  })
 })
 
 afterAll(() => {

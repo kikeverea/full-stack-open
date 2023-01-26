@@ -43,27 +43,28 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
 })
 
 blogsRouter.put('/:id', middleware.userExtractor, middleware.commentsExtractor, async (request, response) => {
-  const { title, author, url, likes = 0, comments = request.comments, user = request.user.id } = request.body
+  const { title, author, url, likes = 0, user = request.user.id } = request.body
 
   const id = request.params.id
+  const comments = request.comments
   const blog = await Blog.findById(id)
 
   if (userIsNotCreatorOfBlog(user, blog))
     return unauthorizedUserResponse(response)
 
   const updated = await updateBlog(request.params.id, { title, author, url, likes, comments, user })
-  response.status(200).json(updated)
+  response.status(204).json(updated)
 })
 
 blogsRouter.put('/:id/likes', async (request, response) => {
   const { likes } = request.body
 
   const updated = await updateBlog(request.params.id, { likes })
-  response.status(200).json(updated)
+  response.status(204).json(updated)
 })
 
 blogsRouter.post('/:id/comments', async (request, response) => {
-  const comment = request.body.comment
+  const { comment } = request.body
 
   const blogId = request.params.id
   const blog = await Blog.findById(blogId)
@@ -80,17 +81,21 @@ blogsRouter.post('/:id/comments', async (request, response) => {
 })
 
 const updateBlog = async (blogId, updateFields) =>
-  // atomic
-  await Blog.findByIdAndUpdate(blogId,
+  await Blog.findByIdAndUpdate(
+    blogId,
     updateFields,
     { new: true, runValidators: true, context: 'query' })
 
-blogsRouter.delete('/:blogId/comments/:commentId', async (request, response) => {
+blogsRouter.delete('/:blogId/comments/:commentId', middleware.userExtractor, async (request, response) => {
   const commentId = request.params.commentId
   const blogId = request.params.blogId
 
   const comment = await Comment.findById(commentId)
   const blog = await Blog.findById(blogId)
+  const user = request.user
+
+  if (userIsNotCreatorOfBlog(user.id, blog))
+    return unauthorizedUserResponse(response)
 
   await comment.remove()
   await updateBlog(blogId, { comments: blog.comments.filter(comment => comment.id !== commentId) })
@@ -112,10 +117,8 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
   response.status(204).end()
 })
 
-const userIsNotCreatorOfBlog = (userId, blog) => {
-  if (blog.user.toString() !== userId)
-    return true
-}
+const userIsNotCreatorOfBlog = (userId, blog) =>
+  blog.user.toString() !== userId
 
 const unauthorizedUserResponse = (response) => {
   response

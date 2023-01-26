@@ -3,6 +3,7 @@ const User = require('../models/user')
 const usersHelper = require('./users_helper')
 const blogsHelper = require('./blogs_helper')
 const bcrypt = require('bcrypt')
+const Comment = require('../models/comment')
 
 let lastUsedUserInd = usersHelper.initialUsers.length
 
@@ -30,6 +31,9 @@ const initBlogs = async () => {
   const blogs =
     blogsHelper.initialBlogs.map(blog => blogWithNextUser(blog, usersInDb))
 
+  for (const blog of blogs)
+    await initBlogComments(blog)
+
   const blogsInDb = await initCollection(Blog, blogs, blog => new Blog(blog))
 
   await addBlogsToTheirUsers(blogsInDb)
@@ -46,17 +50,35 @@ const getUsersInDb = async () => {
   return usersInDb
 }
 
-const initCollection = async (model, data, mapper) => {
-  await model.deleteMany({})
-  const entities = data.map(data => mapper(data))
-  const promises = entities.map(entity => entity.save())
-  return await Promise.all(promises)
+const initBlogComments = async (blog) => {
+  const random = Math.max(1, Math.floor(Math.random() * 4))
+  blog.comments = []
+
+  for (let i = 0; i < random; i++) {
+    const comment = new Comment({
+      comment: `comment ${i}`,
+      blog: blog._id
+    })
+
+    const savedComment = await comment.save()
+
+    blog.comments.push(savedComment._id)
+  }
+
+  return blog
 }
 
 const blogWithNextUser = (blog, users) => ({
   ... blog,
   user: users[nextUserInd()]._id
 })
+
+const initCollection = async (model, data, mapper) => {
+  await model.deleteMany({})
+  const entities = data.map(data => mapper(data))
+  const promises = entities.map(entity => entity.save())
+  return await Promise.all(promises)
+}
 
 const nextUserInd = () => {
   if (++lastUsedUserInd >= usersHelper.initialUsers.length)
@@ -70,7 +92,6 @@ const addBlogsToTheirUsers = async blogs => {
     const user = await User.findById(blog.user)
     user.blogs = user.blogs ? user.blogs.concat(blog._id) : [blog._id]
     await user.save()
-    // console.log('saved user', saved);
   }
 }
 

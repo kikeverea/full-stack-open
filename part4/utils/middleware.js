@@ -52,9 +52,12 @@ const userExtractor = (request, response, next) => {
 }
 
 const commentsExtractor = (request, response, next) => {
-  const comments = request.body.comments
+  const { comments } = request.body
 
-  request.comments = comments.map(comment => comment.id)
+  request.comments =
+    comments
+      ? comments.map(comment => typeof comment === 'string' ? comment : comment.id)
+      : []
 
   next()
 }
