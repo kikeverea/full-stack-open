@@ -22,7 +22,7 @@ const actions = ({
     },
     update(state, action) {
       const toUpdate = action.payload
-      const updated = state.map(blog => blog.id === toUpdate.id ? toUpdate : blog)
+      const updated = state.map(obj => obj.id === toUpdate.id ? toUpdate : obj)
       return updateDownstream(updated)
     },
     remove(state, action) {
