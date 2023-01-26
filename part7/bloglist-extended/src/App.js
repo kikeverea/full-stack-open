@@ -11,6 +11,7 @@ import { clearNotification } from './reducers/notificationReducer'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import User from './components/users/User'
 import Blog from './components/blogs/Blog'
+import { Col, Container, Row } from 'react-bootstrap'
 
 const App = () => {
 
@@ -31,9 +32,13 @@ const App = () => {
   }, [location])
 
   return (
-    <div className='container'>
-      { user && <NavigationBar /> }
-      <Notification />
+    <Container>
+      <Row>
+        <Col><NavigationBar /></Col>
+      </Row>
+      <Row className='my-3'>
+        <Col><Notification /></Col>
+      </Row>
       <Routes>
         { ['/', '/blogs'].map(path =>
           <Route key={ path } path={ path } element={
@@ -47,7 +52,7 @@ const App = () => {
         <Route path='/users/:id' element={ <User /> }/>
         <Route path='/blogs/:id' element={ <Blog /> }/>
       </Routes>
-    </div>
+    </Container>
   )
 }
 

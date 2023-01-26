@@ -16,35 +16,42 @@ const NavigationBar = () => {
   }
 
   return (
-    <Navbar bg='dark' variant='dark' expand='lg'>
-      <Container>
-        <Nav className='me-auto'>
-          <LinkContainer to='/blogs'>
-            <Nav.Link>
-              Blogs
-            </Nav.Link>
-          </LinkContainer>
-          <LinkContainer to='/users'>
-            <Nav.Link>
-              Users
-            </Nav.Link>
-          </LinkContainer>
-        </Nav>
-        <Navbar.Collapse className='justify-content-end'>
-          <Navbar.Text>
-            signed in:
-          </Navbar.Text>
-          <Nav>
-            <LinkContainer to={ `/users/${ loggedInUser.id }` }>
+    loggedInUser ?
+      <Navbar bg='dark' variant='dark' expand='lg'>
+        <Container>
+          <Nav className='me-auto'>
+            <LinkContainer to='/blogs'>
               <Nav.Link>
-                { loggedInUser.name }
+                Blogs
+              </Nav.Link>
+            </LinkContainer>
+            <LinkContainer to='/users'>
+              <Nav.Link>
+                Users
               </Nav.Link>
             </LinkContainer>
           </Nav>
-          <Button variant='outline-light' size='sm' className='mx-2' onClick={ logout }>Logout</Button>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+          <Navbar.Collapse className='justify-content-end'>
+            <Navbar.Text>
+              signed in:
+            </Navbar.Text>
+            <Nav>
+              <LinkContainer to={ `/users/${ loggedInUser.id }` }>
+                <Nav.Link>
+                  { loggedInUser.name }
+                </Nav.Link>
+              </LinkContainer>
+            </Nav>
+            <Button variant='outline-light' size='sm' className='mx-2' onClick={ logout }>Logout</Button>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      :
+      <Navbar bg='dark' variant='dark' expand='lg'>
+        <Container>
+          <Navbar.Brand>Login</Navbar.Brand>
+        </Container>
+      </Navbar>
   )
 }
 
