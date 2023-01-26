@@ -7,7 +7,7 @@ import NewBlogForm from './NewBlogForm'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { createNewBlog, initializeBlogs } from '../../reducers/blogsReducer'
-import { showSuccessNotification, showFailNotification } from '../../reducers/notificationReducer'
+import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
 
 import { consumeUpdateState } from '../../reducers/updateBlogsState'
 
@@ -51,7 +51,11 @@ const Blogs = () => {
     <>
       <h1>Blogs</h1>
       <Flex customStyle={{ flexDirection: 'column', gap: 5, maxWidth: 480 }}>
-        <Toggable id='new-blog-form' label={ 'new blog' } ref={ newBlogForm }>
+        <Toggable
+          id='new-blog-form'
+          buttonVariant='outline-dark'
+          label='add new blog'
+          ref={ newBlogForm }>
           <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
         </Toggable>
         { blogs ?

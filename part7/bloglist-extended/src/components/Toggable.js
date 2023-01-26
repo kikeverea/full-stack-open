@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useState } from 'react'
 import PropTypes from 'prop-types'
+import { Button } from 'react-bootstrap'
 
 const Toggable = forwardRef((props, ref) => {
 
@@ -25,7 +26,7 @@ const Toggable = forwardRef((props, ref) => {
   return (
     <div id = { props.id } className='toggable' style={{ padding: '20px 0 20px 0' }}>
       <div className='toggler-element' style={ hideWhenActive }>
-        <button className='toggle-button' onClick={ toggle }>{ props.label }</button>
+        <Button variant={ props.buttonVariant } onClick={ toggle }>{ props.label }</Button>
       </div>
       <div className='toggable-children' style={ showWhenActive }>
         { props.children }
