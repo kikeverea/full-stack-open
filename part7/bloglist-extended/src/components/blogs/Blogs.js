@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 
 import Flex from '../Flex'
-import BlogItem from './BlogItem'
 import Toggable from '../Toggable'
 import NewBlogForm from './NewBlogForm'
 
@@ -10,10 +9,13 @@ import { createNewBlog, initializeBlogs } from '../../reducers/blogsReducer'
 import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
 
 import { consumeUpdateState } from '../../reducers/updateBlogsState'
+import { ListGroup } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
 
 const Blogs = () => {
 
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.loggedInUser)
@@ -50,7 +52,7 @@ const Blogs = () => {
   return (
     <>
       <h1>Blogs</h1>
-      <Flex customStyle={{ flexDirection: 'column', gap: 5, maxWidth: 480 }}>
+      <Flex customStyle={{ flexDirection: 'column', gap: 5 }}>
         <Toggable
           id='new-blog-form'
           buttonVariant='outline-dark'
@@ -59,15 +61,15 @@ const Blogs = () => {
           <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
         </Toggable>
         { blogs ?
-          <>
-            {
-              blogs.map(blog =>
-                <BlogItem
-                  key={ blog.id }
-                  blog={ blog } />
-              )}
-          </>
-          : 'No blogs listed' }
+          <ListGroup>
+            { blogs.map(blog =>
+              <ListGroup.Item action onClick={() => navigate(`/blogs/${ blog.id }`)} key={ blog.id }>
+                { blog.title }
+              </ListGroup.Item>
+            )}
+          </ListGroup>
+          :
+          'No blogs listed' }
       </Flex>
     </>
   )
