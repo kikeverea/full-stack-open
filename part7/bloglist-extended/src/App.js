@@ -31,7 +31,7 @@ const App = () => {
   }, [location])
 
   return (
-    <div style={{ padding: 10 }}>
+    <div className='container'>
       { user && <NavigationBar /> }
       <Notification />
       <Routes>
