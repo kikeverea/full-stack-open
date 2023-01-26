@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import blogsService from '../services/blogs'
-import { blogsUpdateSucceededMessage, blogsUpdateFailedMessage } from './updateBlogsState'
+import { blogsUpdateFailedMessage, blogsUpdateSucceededMessage } from './updateBlogsState'
 import listActions from './repositoryReducerActions'
 
 const sortByLikes = (blogs) =>
@@ -59,9 +59,9 @@ export const addCommentToBlog = (comment, blog) => {
   }
 }
 
-export const removeCommentFromBlog = (comment, blog) => {
+export const removeCommentFromBlog = (comment, blog, user) => {
   return async dispatch => {
-    const deleted = await blogsService.deleteCommentFromBlog(comment, blog)
+    const deleted = await blogsService.deleteCommentFromBlog(comment, blog, user)
 
     if (deleted) {
       const updatedBlog = {

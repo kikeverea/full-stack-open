@@ -23,13 +23,13 @@ const createBlog = async (blog, user) => {
 const updateBlog = async (blog, user) => {
   blog = formatBlogForUpdate(blog)
   const response = await axios.put(`${ baseUrl }/${ blog.id }`, blog, config(user))
-  return response.status === 200
+  return response.status === 204
 }
 
 const updateBlogLikes = async (blog) => {
   blog = formatBlogForUpdate(blog)
   const response = await axios.put(`${ baseUrl }/${ blog.id }/likes`, blog)
-  return response.status === 200
+  return response.status === 204
 }
 
 const addCommentToBlog = async (comment, blog) => {
@@ -37,15 +37,17 @@ const addCommentToBlog = async (comment, blog) => {
   return response.data
 }
 
-const deleteCommentFromBlog = async (comment, blog) => {
-  const response = await axios.delete(`${ baseUrl }/${ blog.id }/comments/${ comment.id }`)
+const deleteCommentFromBlog = async (comment, blog, user) => {
+  const response = await axios.delete(`${ baseUrl }/${ blog.id }/comments/${ comment.id }`, config(user))
   return response.status === 204
 }
 
 const formatBlogForUpdate = blog => {
+  const commentsIds = blog.comments.map(comment => comment.id)
   return {
     ...blog,
-    user: blog.user.id
+    user: blog.user.id,
+    comments: commentsIds
   }
 }
 

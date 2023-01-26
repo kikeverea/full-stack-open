@@ -1,14 +1,15 @@
 import AddComment from './AddComment'
 import { DeleteButtonX, FlexRow } from '../styled'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { removeCommentFromBlog } from '../../reducers/blogsReducer'
 
 const Comments = ({ blog }) => {
 
   const dispatch = useDispatch()
+  const loggedInUser = useSelector(state => state.loggedInUser)
 
   const deleteComment = (comment) =>
-    dispatch(removeCommentFromBlog(comment, blog))
+    dispatch(removeCommentFromBlog(comment, blog, loggedInUser))
 
   return (
     <>
