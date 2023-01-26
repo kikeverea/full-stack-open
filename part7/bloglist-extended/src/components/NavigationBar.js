@@ -1,7 +1,8 @@
-import { FlexRow, FlexSpacedRow } from './styled'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { logoutUser } from '../reducers/loggedInUserReducer'
+import { Button, Container, Nav, Navbar } from 'react-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap'
 
 const NavigationBar = () => {
 
@@ -15,16 +16,35 @@ const NavigationBar = () => {
   }
 
   return (
-    <FlexSpacedRow style={{ background: 'rgb(130, 210, 240)' }}>
-      <FlexRow>
-        <Link to='/blogs'>blogs</Link>
-        <Link to='/users'>users</Link>
-      </FlexRow>
-      <FlexRow>
-        { loggedInUser.name }
-        <button onClick={ logout }>Logout</button>
-      </FlexRow>
-    </FlexSpacedRow>
+    <Navbar bg='dark' variant='dark' expand='lg'>
+      <Container>
+        <Nav className='me-auto'>
+          <LinkContainer to='/blogs'>
+            <Nav.Link>
+              Blogs
+            </Nav.Link>
+          </LinkContainer>
+          <LinkContainer to='/users'>
+            <Nav.Link>
+              Users
+            </Nav.Link>
+          </LinkContainer>
+        </Nav>
+        <Navbar.Collapse className='justify-content-end'>
+          <Navbar.Text>
+            signed in:
+          </Navbar.Text>
+          <Nav>
+            <LinkContainer to={ `/users/${ loggedInUser.id }` }>
+              <Nav.Link>
+                { loggedInUser.name }
+              </Nav.Link>
+            </LinkContainer>
+          </Nav>
+          <Button variant='outline-light' size='sm' className='mx-2' onClick={ logout }>Logout</Button>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   )
 }
 
