@@ -16,5 +16,14 @@ export const initializeUsers = () => {
   }
 }
 
+export const editUser = (updatedUser) => {
+  return async dispatch => {
+    const updated = await usersService.updateUser(updatedUser)
+
+    if (updated)
+      dispatch(update(updatedUser))
+  }
+}
+
 export const { setAll, add, update, remove } = usersSlice.actions
 export default usersSlice.reducer

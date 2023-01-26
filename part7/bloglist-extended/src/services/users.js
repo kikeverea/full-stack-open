@@ -9,6 +9,17 @@ const fetchAllUsers = async () => {
   return response.data
 }
 
+const updateUser = async (updatedUser) => {
+  const loggedInUser = getUserFromLocal()
+  const response = await axios.put(`${usersUrl}/${updatedUser.id}`, updatedUser, config(loggedInUser))
+  const updated = response.status === 204
+
+  if (updated)
+    saveUserInLocal({ ...getUserFromLocal(), name: updatedUser.name })
+
+  return updated
+}
+
 const getUserFromLocal = () => {
   const json = window.localStorage.getItem(LOCAL_STORAGE_USER_KEY)
   return json ? JSON.parse(json) : null
@@ -20,4 +31,12 @@ const saveUserInLocal = (user) =>
 const removeUserFromLocal = () =>
   window.localStorage.removeItem(LOCAL_STORAGE_USER_KEY)
 
-export default { fetchAllUsers, getUserFromLocal, saveUserInLocal, removeUserFromLocal }
+const config = (user) => {
+  return (
+    {
+      headers: { Authorization: `bearer ${ user.token }` },
+    }
+  )
+}
+
+export default { fetchAllUsers, updateUser, getUserFromLocal, saveUserInLocal, removeUserFromLocal }
