@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import FormField from '../FormField'
-import Flex from '../Flex'
 import { consumeLoginResult, logInUser } from '../../reducers/loginReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 
 const LoginForm = () => {
 
@@ -42,22 +41,28 @@ const LoginForm = () => {
 
   return (
     user
-      ? <Navigate replace to='/' />
-      : <>
-        <h1>Log In</h1>
-        <form onSubmit={ handleLogin }>
-          <Flex customStyle={{
-            flexDirection: 'column',
-            gap: 10,
-            maxWidth: 260,
-            alignContent: 'flex-start'
-          }}>
-            <FormField name='User' value={ username } inputChange={ setUsername } />
-            <FormField name='Password' value={ password } inputChange={ setPassword } />
-            <input id='submitButton' type='submit' value='login'/>
-          </Flex>
-        </form>
-      </>
+      ?
+      <Navigate replace to='/' />
+      :
+      <Container>
+        <Row>
+          <Col className='d-flex justify-content-center'>
+            <Form onSubmit={ handleLogin } style={{ width: 300 }}>
+              <Form.Group className='mb-3' controlId='User' >
+                <Form.Label>Username</Form.Label>
+                <Form.Control value={ username } onChange={({ target }) => setUsername(target.value)}/>
+              </Form.Group>
+              <Form.Group className='mb-3' controlId='Password'>
+                <Form.Label>Password</Form.Label>
+                <Form.Control type='password' value={ password } onChange={({ target }) => setPassword(target.value)}/>
+              </Form.Group>
+              <Button variant='primary' type='submit' style={{ width: 300 }}>
+                Log in
+              </Button>
+            </Form>
+          </Col>
+        </Row>
+      </Container>
   )
 }
 
