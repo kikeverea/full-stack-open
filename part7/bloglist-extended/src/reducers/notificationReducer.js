@@ -21,7 +21,7 @@ export const showFailNotification = (content, duration) => {
   return showNotification(content, 'fail', duration)
 }
 
-const showNotification = (content, type, duration = 5000) => {
+const showNotification = (content, type, duration = 3000) => {
   return (dispatch, getState) => {
     const notificationOnDisplay = getState().notification
 
