@@ -5,9 +5,10 @@ import { useEffect } from 'react'
 import { consumeUpdateState } from '../../reducers/updateBlogsState'
 import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
 import Comments from './Comments'
-import { Button, Col, Container, Row } from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap'
 import BlogTitle from './BlogTitle'
 import BlogLikes from './BlogLikes'
+import DeleteBlog from './DeleteBlog'
 
 const Blog = () => {
 
@@ -28,12 +29,8 @@ const Blog = () => {
     }
   }, [updateBlogState])
 
-  const remove = (blog) => {
-    const deleteConfirmed = window.confirm(`Remove blog '${ blog.title }'?`)
-
-    if (deleteConfirmed)
-      dispatch(deleteBlog(blog, loggedInUser))
-  }
+  const remove = () =>
+    dispatch(deleteBlog(blog, loggedInUser))
 
   return (
     blog ?
@@ -43,11 +40,16 @@ const Blog = () => {
             <BlogTitle blog={ blog }/>
           </Col>
           <Col xs={ 2 }>
-            <Button
-              variant='outline-danger' className='float-end me-3'
-              onClick={ () => remove(blog) }>
-              remove
-            </Button>
+            { loggedInUser.username === blog.user.username
+              ?
+              <DeleteBlog
+                blog={ blog }
+                deleteBlog={ remove }
+                className='float-end me-3'>
+              </DeleteBlog>
+              :
+              null
+            }
           </Col>
         </Row>
         <Row className='pb-4'>

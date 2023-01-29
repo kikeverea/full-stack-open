@@ -18,7 +18,7 @@ const BlogTitle = ({ blog }) => {
       </blockquote>
       <figcaption className='blockquote-footer py-2'>
         <cite title='author'>
-          added by <Link to={ `/users/${ blog.user.id }` }
+          authored by <Link to={ `/users/${ blog.user.id }` }
             className='link-secondary'>
             { blog.author }
           </Link>
