@@ -1,7 +1,8 @@
-import AddComment from './AddComment'
-import { DeleteButtonX, FlexRow } from '../styled'
+import { FlexRow } from '../styled'
 import { useDispatch, useSelector } from 'react-redux'
 import { removeCommentFromBlog } from '../../reducers/blogsReducer'
+import AddComment from './AddComment'
+import { CloseButton, ListGroup } from 'react-bootstrap'
 
 const Comments = ({ blog }) => {
 
@@ -13,16 +14,26 @@ const Comments = ({ blog }) => {
 
   return (
     <>
-      <h3>Comments</h3>
+      <h5>Comments</h5>
       <AddComment blog={ blog }/>
-      <div>
+      <ListGroup variant='flush'>
         { blog.comments.map(comment =>
-          <FlexRow key={ comment.id } style={{ alignItems: 'center' }}>
-            <DeleteButtonX onClick={ () => deleteComment(comment) }>X</DeleteButtonX>
-            <div>{ comment.comment }</div>
-          </FlexRow>
+          <ListGroup.Item key={ comment.id } className='py-3'>
+            <FlexRow style={{ justifyContent: 'space-between' }}>
+              <div>{ comment.comment }</div>
+              <CloseButton onClick={ () => deleteComment(comment) } />
+            </FlexRow>
+          </ListGroup.Item>
         )}
-      </div>
+      </ListGroup>
+      {/*<div>*/}
+      {/*  { blog.comments.map(comment =>*/}
+      {/*    <FlexRow key={ comment.id } style={{ alignItems: 'center' }}>*/}
+      {/*      <CloseButton onClick={ () => deleteComment(comment) } />*/}
+      {/*      <div>{ comment.comment }</div>*/}
+      {/*    </FlexRow>*/}
+      {/*  )}*/}
+      {/*</div>*/}
     </>
   )
 }

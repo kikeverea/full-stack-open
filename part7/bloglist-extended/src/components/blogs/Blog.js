@@ -1,12 +1,13 @@
 import { Navigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { FlexRow, FlexColumn } from '../styled'
-import HoverButton from '../HoverButton'
-import { deleteBlog, likeBlog } from '../../reducers/blogsReducer'
+import { deleteBlog } from '../../reducers/blogsReducer'
 import { useEffect } from 'react'
 import { consumeUpdateState } from '../../reducers/updateBlogsState'
 import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
 import Comments from './Comments'
+import { Button, Col, Container, Row } from 'react-bootstrap'
+import BlogTitle from './BlogTitle'
+import BlogLikes from './BlogLikes'
 
 const Blog = () => {
 
@@ -27,10 +28,6 @@ const Blog = () => {
     }
   }, [updateBlogState])
 
-  const like = (blog) => {
-    dispatch(likeBlog(blog))
-  }
-
   const remove = (blog) => {
     const deleteConfirmed = window.confirm(`Remove blog '${ blog.title }'?`)
 
@@ -38,22 +35,52 @@ const Blog = () => {
       dispatch(deleteBlog(blog, loggedInUser))
   }
 
+  const formatUrl = url =>
+    url.includes('http') ?
+      url :
+      `https://${ url }`
+
   return (
     blog ?
-      <>
-        <h1>{ blog.title }</h1>
-        <FlexColumn style={{ gap: 16 }}>
-          <a id='url' href={ blog.url }>{ blog.url }</a>
-          <FlexRow>
-            <div id='likes'>{ blog.likes }</div>
-            <button onClick={ () => like(blog) }>like</button>
-          </FlexRow>
-          <div id='author'>added by { blog.author }</div>
-          <HoverButton label={ 'remove' } color={ '#de1212' } handleOnClick={ () => remove(blog) }/>
-          <Comments blog={ blog }/>
-        </FlexColumn>
-      </>
-      : <Navigate replace to='/blogs'/>
+      <Container className='pb-5'>
+        <Row className='pb-4'>
+          <Col xs={ 10 }>
+            <BlogTitle
+              title={ blog.title }
+              author={ blog.author }
+              url={ formatUrl(blog.url) }/>
+          </Col>
+          <Col xs={ 2 }>
+            <Button variant='outline-danger' className='float-end me-3' handleOnClick={ () => remove(blog) }>
+              remove
+            </Button>
+          </Col>
+        </Row>
+        <Row className='pb-4'>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Sed in elit id nunc mollis tempor. Morbi ac massa fringilla,
+            fringilla quam quis, sodales magna. Integer fermentum dolor sit amet
+            imperdiet pretium. Sed consectetur in purus at commodo. Morbi
+            sollicitudin a risus vel pharetra. Curabitur vitae ullamcorper ante,
+            vitae porta nisi. Praesent vel pellentesque risus, quis ultrices nisl.
+            Duis non mattis urna, eu scelerisque tortor. Etiam accumsan cursus
+            efficitur. Integer in egestas lectus, sed hendrerit leo.
+          </p>
+        </Row>
+        <Row className='pb-4'>
+          <Col>
+            <Comments blog={ blog }/>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <BlogLikes blog={ blog }/>
+          </Col>
+        </Row>
+      </Container>
+      :
+      <Navigate replace to='/blogs'/>
   )
 }
 
