@@ -17,8 +17,9 @@ const NavigationBar = () => {
 
   return (
     loggedInUser ?
-      <Navbar bg='dark' variant='dark' expand='lg'>
+      <Navbar bg='dark' variant='dark'>
         <Container>
+          <Navbar.Brand>Blogs App</Navbar.Brand>
           <Nav className='me-auto'>
             <LinkContainer to='/blogs'>
               <Nav.Link>
@@ -44,6 +45,7 @@ const NavigationBar = () => {
             </Nav>
             <Button variant='outline-light' size='sm' className='mx-2' onClick={ logout }>Logout</Button>
           </Navbar.Collapse>
+          <Navbar.Toggle />
         </Container>
       </Navbar>
       :
