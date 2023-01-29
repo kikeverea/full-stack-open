@@ -25,8 +25,9 @@ const LoginForm = () => {
       dispatch(showSuccessNotification('Logged in'))
       navigate('/')
     }
-    else
-      showFailNotification('Log in failed. Wrong credentials')
+    else {
+      dispatch(showFailNotification('Log in failed. Wrong credentials'))
+    }
 
     dispatch(consumeLoginResult())
 

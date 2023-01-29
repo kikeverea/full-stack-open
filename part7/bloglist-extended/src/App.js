@@ -34,10 +34,14 @@ const App = () => {
   return (
     <Container>
       <Row>
-        <Col><NavigationBar /></Col>
+        <Col>
+          <NavigationBar />
+        </Col>
       </Row>
       <Row className='my-3'>
-        <Col><Notification /></Col>
+        <Col>
+          <Notification />
+        </Col>
       </Row>
       <Routes>
         { ['/', '/blogs'].map(path =>
