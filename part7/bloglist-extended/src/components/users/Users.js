@@ -1,10 +1,8 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeUsers } from '../../reducers/usersReducer'
-
-import { TableHeader } from '../styled'
-import { TableColumn } from '../styled'
 import { Link } from 'react-router-dom'
+import { Table } from 'react-bootstrap'
 
 const Users = () => {
 
@@ -17,25 +15,27 @@ const Users = () => {
 
   return (
     <>
-      <h1>Users</h1>
-      <table>
+      <h1 className='pb-4'>Users</h1>
+      <Table>
         <thead>
           <tr>
-            <TableHeader>User Name</TableHeader>
-            <TableHeader>Blogs Created</TableHeader>
+            <th>User</th>
+            <th>Username</th>
+            <th>Blogs Created</th>
           </tr>
         </thead>
         <tbody>
           { users.map(user =>
-            <tr key={ user.id } align='center'>
-              <TableColumn>
+            <tr key={ user.id }>
+              <td>
                 <Link to={ `/users/${ user.id }` }>{ user.name }</Link>
-              </TableColumn>
-              <TableColumn>{ user.blogs.length }</TableColumn>
+              </td>
+              <td>{ user.username }</td>
+              <td>{ user.blogs.length }</td>
             </tr>)
           }
         </tbody>
-      </table>
+      </Table>
     </>
   )
 }

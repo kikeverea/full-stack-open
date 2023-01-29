@@ -9,9 +9,13 @@ const usersSlice = createSlice({
   reducers: repositoryActions()
 })
 
+const sortByBlogsAmount = users =>
+  users.sort((user1, user2) => user2.blogs.length - user1.blogs.length)
+
 export const initializeUsers = () => {
   return async dispatch => {
     const users = await usersService.fetchAllUsers()
+    sortByBlogsAmount(users)
     dispatch(setAll(users))
   }
 }
