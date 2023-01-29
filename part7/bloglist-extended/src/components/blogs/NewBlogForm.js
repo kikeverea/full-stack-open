@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import FormField from '../FormField'
-import Flex from '../Flex'
 import { showFailNotification } from '../../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 import { FlexRow } from '../styled'
+import { Button, Form } from 'react-bootstrap'
 
 const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 
@@ -30,6 +30,13 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
 
       onFormSubmit(newBlog)
     }
+  }
+
+  const cancel = () => {
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+    onCancel()
   }
 
   const validateInput = () => {
@@ -73,23 +80,15 @@ const NewBlogForm = ({ onFormSubmit, onCancel }) => {
   return (
     <div>
       <h2>Create new Blog</h2>
-      <form onSubmit={ submitBlog }>
-        <Flex direction={ 'column' }
-          customStyle={{
-            gap: 8,
-            width: 250
-          }}
-        >
-          <FormField name='Title' value={ title } inputChange={ setTitle } />
-          <FormField name='Author' value={ author } inputChange={ setAuthor } />
-          <FormField name='Url' value={ url } inputChange={ setUrl } />
-          <FlexRow>
-            <input type='submit' value='Submit' />
-            <button id='new-blog-submit' onClick={ onCancel }>Cancel</button>
-          </FlexRow>
-        </Flex>
-      </form>
-      <br />
+      <Form onSubmit={ submitBlog } className='py-4'>
+        <FormField name='Title' value={ title } inputChange={ setTitle } />
+        <FormField name='Author' value={ author } inputChange={ setAuthor } />
+        <FormField name='Url' value={ url } inputChange={ setUrl } />
+        <FlexRow>
+          <Button variant='primary' type='submit'>Create</Button>
+          <Button variant='secondary' onClick={ cancel }>Cancel</Button>
+        </FlexRow>
+      </Form>
     </div>
   )
 }

@@ -51,7 +51,9 @@ const Blog = () => {
               url={ formatUrl(blog.url) }/>
           </Col>
           <Col xs={ 2 }>
-            <Button variant='outline-danger' className='float-end me-3' handleOnClick={ () => remove(blog) }>
+            <Button
+              variant='outline-danger' className='float-end me-3'
+              onClick={ () => remove(blog) }>
               remove
             </Button>
           </Col>

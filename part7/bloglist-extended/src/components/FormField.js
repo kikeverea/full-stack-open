@@ -1,17 +1,16 @@
-import Flex from './Flex'
+import { Form } from 'react-bootstrap'
 
-const FormField = ({ name, value, inputChange }) => {
+const FormField = ({ name, type = 'text', value, inputChange }) => {
 
   return (
-    <Flex direction={ 'row' } customStyle={{ gap: 20, justifyContent: 'space-between' }}>
-      <label htmlFor={ name }>{ name }</label>
-      <input
+    <Form.Group className="mb-3">
+      <Form.Label>{ name }</Form.Label>
+      <Form.Control
         id={ name }
-        type="text"
+        type={ type }
         value={ value }
-        onChange={({ target }) => inputChange(target.value)}
-      />
-    </Flex>
+        onChange={ ({ target }) => inputChange(target.value) }/>
+    </Form.Group>
   )
 }
 
