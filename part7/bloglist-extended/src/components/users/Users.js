@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { initializeUsers } from '../../reducers/usersReducer'
-import { Link } from 'react-router-dom'
 import { Table } from 'react-bootstrap'
+import { LinkContainer } from 'react-router-bootstrap'
 
 const Users = () => {
 
@@ -16,7 +16,7 @@ const Users = () => {
   return (
     <>
       <h1 className='pb-4'>Users</h1>
-      <Table>
+      <Table hover>
         <thead>
           <tr>
             <th>User</th>
@@ -26,13 +26,13 @@ const Users = () => {
         </thead>
         <tbody>
           { users.map(user =>
-            <tr key={ user.id }>
-              <td>
-                <Link to={ `/users/${ user.id }` }>{ user.name }</Link>
-              </td>
-              <td>{ user.username }</td>
-              <td>{ user.blogs.length }</td>
-            </tr>)
+            <LinkContainer key={ user.id } to={ `/users/${ user.id }` } style={{ cursor: 'pointer' }}>
+              <tr>
+                <td>{ user.name }</td>
+                <td>{ user.username }</td>
+                <td>{ user.blogs.length }</td>
+              </tr>
+            </LinkContainer>)
           }
         </tbody>
       </Table>
