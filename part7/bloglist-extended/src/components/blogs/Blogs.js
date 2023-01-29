@@ -9,13 +9,11 @@ import { createNewBlog, initializeBlogs } from '../../reducers/blogsReducer'
 import { showFailNotification, showSuccessNotification } from '../../reducers/notificationReducer'
 
 import { consumeUpdateState } from '../../reducers/updateBlogsState'
-import { ListGroup } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
+import BlogsList from './BlogsList'
 
 const Blogs = () => {
 
   const dispatch = useDispatch()
-  const navigate = useNavigate()
 
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.loggedInUser)
@@ -60,16 +58,7 @@ const Blogs = () => {
           ref={ newBlogForm }>
           <NewBlogForm onFormSubmit={ addNewBlog } onCancel={ cancelNewBlog } />
         </Toggable>
-        { blogs ?
-          <ListGroup>
-            { blogs.map(blog =>
-              <ListGroup.Item action onClick={() => navigate(`/blogs/${ blog.id }`)} key={ blog.id }>
-                { blog.title }
-              </ListGroup.Item>
-            )}
-          </ListGroup>
-          :
-          'No blogs listed' }
+        <BlogsList blogs={ blogs }/>
       </Flex>
     </>
   )

@@ -1,16 +1,28 @@
 import OpenLink from '../../icons/OpenLink'
+import { Link } from 'react-router-dom'
 
-const BlogTitle = ({ title, author, url }) => {
+const BlogTitle = ({ blog }) => {
+
+  const formatUrl = url =>
+    url.includes('http') ?
+      url :
+      `https://${ url }`
+
   return (
     <figure>
       <blockquote className='blockquote'>
         <h1>
-          { title }
-          <span><OpenLink link={ url }/></span>
+          { blog.title }
+          <span><OpenLink link={ formatUrl(blog.url) }/></span>
         </h1>
       </blockquote>
       <figcaption className='blockquote-footer py-2'>
-        <cite title='author'>added by { author }</cite>
+        <cite title='author'>
+          added by <Link to={ `/users/${ blog.user.id }` }
+            className='link-secondary'>
+            { blog.author }
+          </Link>
+        </cite>
       </figcaption>
     </figure>
   )

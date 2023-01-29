@@ -35,20 +35,12 @@ const Blog = () => {
       dispatch(deleteBlog(blog, loggedInUser))
   }
 
-  const formatUrl = url =>
-    url.includes('http') ?
-      url :
-      `https://${ url }`
-
   return (
     blog ?
       <Container className='pb-5'>
         <Row className='pb-4'>
           <Col xs={ 10 }>
-            <BlogTitle
-              title={ blog.title }
-              author={ blog.author }
-              url={ formatUrl(blog.url) }/>
+            <BlogTitle blog={ blog }/>
           </Col>
           <Col xs={ 2 }>
             <Button

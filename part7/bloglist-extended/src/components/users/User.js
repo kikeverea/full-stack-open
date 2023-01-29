@@ -1,22 +1,31 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, useParams } from 'react-router-dom'
-import { FlexRow } from '../styled'
-import EditUserForm from './EditUserForm'
 import { editUser as updateEditedUser } from '../../reducers/usersReducer'
 import { useState } from 'react'
+import BlogsList from '../blogs/BlogsList'
+import { Stack } from 'react-bootstrap'
+import Edit from '../../icons/Edit'
+import InputDialog from '../blogs/InputDialog'
+import { showFailNotification } from '../../reducers/notificationReducer'
 
 const User = () => {
-
-  const [editUser, setEditUser] = useState(false)
 
   const id = useParams().id
   const dispatch = useDispatch()
 
+  const [editUser, setEditUser] = useState(false)
+
   const user = useSelector(state =>
     state.users.find(user => user.id === id))
 
-  const updateUser = (updatedUser) => {
-    dispatch(updateEditedUser(updatedUser))
+  const editUserName = (name) => {
+    if (name) {
+      dispatch(updateEditedUser({ ...user, name }))
+    }
+    else {
+      dispatch(showFailNotification('Name required'))
+    }
+
     setEditUser(false)
   }
 
@@ -25,18 +34,27 @@ const User = () => {
 
   return user ?
     <>
-      <FlexRow style={{ alignItems: 'baseline' }}>
-        <h1>{ user.name }</h1>
-        <h3><i>{ user.username }</i></h3>
-        <button onClick={ () => setEditUser(true) }>edit</button>
-      </FlexRow>
-      { editUser ? <EditUserForm user={ user } onFormSubmit={ updateUser } onCancel={ cancelEdit }/> : null }
-      <h2>Added Blogs</h2>
-      <ul>
-        { user.blogs.map(blog =>
-          <li key={ blog.id }>{ blog.title }</li>)
-        }
-      </ul>
+      <Stack direction='horizontal' style={{ justifyContent: 'space-between' }}>
+        <h1>{ user.username }</h1>
+        <Stack direction='horizontal' gap={ 3 } style={{ justifyContent: 'baseline' }}>
+          <div className='lead'><i>{ user.name }</i></div>
+          <Edit onClick={ () => setEditUser(true) }>edit</Edit>
+        </Stack>
+      </Stack>
+      <InputDialog
+        show={ editUser }
+        value={ user.name }
+        title='Edit User'
+        subtitle='Name'
+        buttonLabel='Save'
+        maxLength={ 20 }
+        onClose={ editUserName }
+        onCancel={ cancelEdit } />
+
+      <div className='py-4'>
+        <h5 className='pb-2'>Blogs</h5>
+        <BlogsList blogs={ user.blogs } />
+      </div>
     </>
     : <Navigate replace to='/users'/>
 }
