@@ -8,6 +8,7 @@ const Users = () => {
 
   const dispatch = useDispatch()
   const users = useSelector(state => state.users)
+  const loggedInUser = useSelector(state => state.loggedInUser)
 
   useEffect(() => {
     dispatch(initializeUsers())
@@ -31,6 +32,11 @@ const Users = () => {
                 <td>{ user.name }</td>
                 <td>{ user.username }</td>
                 <td>{ user.blogs.length }</td>
+                <td className='text-secondary'>
+                  { loggedInUser.username === user.username
+                    ? <em>logged in</em>
+                    : '' }
+                </td>
               </tr>
             </LinkContainer>)
           }

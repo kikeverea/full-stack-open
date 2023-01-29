@@ -12,6 +12,7 @@ const User = () => {
 
   const id = useParams().id
   const dispatch = useDispatch()
+  const loggedInUser = useSelector(state => state.loggedInUser)
 
   const [editUser, setEditUser] = useState(false)
 
@@ -38,7 +39,9 @@ const User = () => {
         <h1>{ user.username }</h1>
         <Stack direction='horizontal' gap={ 3 } style={{ justifyContent: 'baseline' }}>
           <div className='lead'><i>{ user.name }</i></div>
-          <Edit onClick={ () => setEditUser(true) }>edit</Edit>
+          { loggedInUser.username === user.username
+            ? <Edit onClick={ () => setEditUser(true) }>edit</Edit>
+            : null }
         </Stack>
       </Stack>
       <InputDialog
